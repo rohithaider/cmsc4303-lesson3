@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "294638290082",
+    "project_id": "cmsc4303-mohtashimr-lesson3",
+    "storage_bucket": "cmsc4303-mohtashimr-lesson3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:294638290082:android:72e06bfc7c631056c403fb",
+        "android_client_info": {
+          "package_name": "edu.uco.mrohit.map.lesson3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "294638290082-6on3g27f8fnd3abboeqfojvii7bk7qt6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9RBNYmLGEf_pNojdNR9x8uptjrQY9Avg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "294638290082-6on3g27f8fnd3abboeqfojvii7bk7qt6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
