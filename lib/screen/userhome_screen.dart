@@ -47,6 +47,10 @@ class _UserHomeState extends State<UserHomeScreen> {
             ],
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: con.addButton,
+        ),
         body: Text('User home ${user.email}'),
       ),
     );
@@ -56,6 +60,7 @@ class _UserHomeState extends State<UserHomeScreen> {
 class _Controller {
   _UserHomeState state;
   _Controller(this.state);
+  void addButton() {}
 
   void signOut() async {
     try {
