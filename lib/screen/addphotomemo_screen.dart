@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lesson3/model/constant.dart';
 import 'package:lesson3/model/photomemo.dart';
+import 'package:lesson3/screen/myview/mydialog.dart';
 
 class AddPhotoMemoScreen extends StatefulWidget {
   static const routeName = '/addPhotoMemoScreen';
@@ -135,8 +137,24 @@ class _Controller {
     print('=========== ${tempMemo.sharedWith}');
   }
 
-  void getPhoto(String src) {
-    print('======== src: $src');
+  void getPhoto(String src) async {
+    try {
+      PickedFile _imageFile;
+      var _picker = ImagePicker();
+      if (src == Constant.SRC_CAMERA) {
+        _imageFile = await _picker.getImage(source: ImageSource.camera);
+      } else {
+        _imageFile = await _picker.getImage(source: ImageSource.gallery);
+      }
+      if (_imageFile == null) return; //selection canceled
+      state.render(() => state.photo = File(_imageFile.path));
+    } catch (e) {
+      MyDialog.info(
+        context: state.context,
+        title: 'Failed to get picture',
+        content: '$e',
+      );
+    }
   }
 
   void saveTitle(String value) {
