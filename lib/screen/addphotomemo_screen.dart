@@ -40,17 +40,51 @@ class _AddPhotoMemoState extends State<AddPhotoMemoScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.4,
-                child: photo == null
-                    ? Icon(
-                        Icons.photo_library,
-                        size: 300,
-                      )
-                    : Image.file(
-                        photo,
-                        fit: BoxFit.fill,
+              Stack(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: photo == null
+                        ? Icon(
+                            Icons.photo_library,
+                            size: 300,
+                          )
+                        : Image.file(
+                            photo,
+                            fit: BoxFit.fill,
+                          ),
+                  ),
+                  Positioned(
+                    right: 0.0,
+                    bottom: 0.0,
+                    child: Container(
+                      color: Colors.blue[200],
+                      child: PopupMenuButton<String>(
+                        onSelected: con.getPhoto,
+                        itemBuilder: (context) => <PopupMenuEntry<String>>[
+                          PopupMenuItem(
+                            value: Constant.SRC_CAMERA,
+                            child: Row(
+                              children: [
+                                Icon(Icons.photo_camera),
+                                Text(Constant.SRC_CAMERA),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: Constant.SRC_GALLERY,
+                            child: Row(
+                              children: [
+                                Icon(Icons.photo_album),
+                                Text(Constant.SRC_GALLERY),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
+                    ),
+                  ),
+                ],
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -99,6 +133,10 @@ class _Controller {
     print('=========== ${tempMemo.title}');
     print('=========== ${tempMemo.memo}');
     print('=========== ${tempMemo.sharedWith}');
+  }
+
+  void getPhoto(String src) {
+    print('======== src: $src');
   }
 
   void saveTitle(String value) {
