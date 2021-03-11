@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lesson3/controller/firebasecontroller.dart';
+import 'package:lesson3/model/constant.dart';
 
 class UserHomeScreen extends StatefulWidget {
   static const routeName = '/userHomeScreen';
@@ -25,7 +26,7 @@ class _UserHomeState extends State<UserHomeScreen> {
   @override
   Widget build(BuildContext context) {
     Map args = ModalRoute.of(context).settings.arguments;
-    user ??= args['user'];
+    user ??= args[Constant.ARG_USER];
     return WillPopScope(
       onWillPop: () => Future.value(false), //android system back button disabled
       child: Scaffold(
