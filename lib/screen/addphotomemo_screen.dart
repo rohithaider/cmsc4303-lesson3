@@ -166,10 +166,17 @@ class _Controller {
       tempMemo.createdBy = state.user.email;
       String docId = await FirebaseController.addPhotoMemo(tempMemo);
       tempMemo.docId = docId;
+
       MyDialog.circularProgressStop(state.context);
+
+      Navigator.pop(state.context); //return to user home screen
     } catch (e) {
       MyDialog.circularProgressStop(state.context);
-      print('=========== $e');
+      MyDialog.info(
+        context: state.context,
+        title: 'Save photo memo error',
+        content: '$e',
+      );
     }
   }
 
