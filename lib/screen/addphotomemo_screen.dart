@@ -21,6 +21,7 @@ class _AddPhotoMemoState extends State<AddPhotoMemoScreen> {
   User user;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   File photo;
+  String progressMessage;
 
   @override
   void initState() {
@@ -89,6 +90,14 @@ class _AddPhotoMemoState extends State<AddPhotoMemoScreen> {
                   ),
                 ],
               ),
+              progressMessage == null
+                  ? SizedBox(
+                      height: 1,
+                    )
+                  : Text(
+                      progressMessage,
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
               TextFormField(
                 decoration: InputDecoration(
                   hintText: 'Title',
@@ -137,14 +146,28 @@ class _Controller {
     print('=========== ${tempMemo.memo}');
     print('=========== ${tempMemo.sharedWith}');
 
+    MyDialog.circularProgressStart(state.context);
+
     try {
       Map photoInfo = await FirebaseController.uploadPhotoFile(
         photo: state.photo,
         uid: state.user.uid,
+        listener: (double progress) {
+          state.render(() {
+            if (progress == null)
+              state.progressMessage = null;
+            else {
+              progress *= 100;
+              state.progressMessage = 'Uploading: ' + progress.toStringAsFixed(1) + ' %';
+            }
+          });
+        },
       );
+      MyDialog.circularProgressStop(state.context);
       print('========== filename: ${photoInfo[Constant.ARG_FILENAME]}');
       print('========== filename: ${photoInfo[Constant.ARG_DOWNLOADURL]}');
     } catch (e) {
+      MyDialog.circularProgressStop(state.context);
       print('=========== $e');
     }
   }
