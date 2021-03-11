@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lesson3/controller/firebasecontroller.dart';
 
 class UserHomeScreen extends StatefulWidget {
   static const routeName = '/userHomeScreen';
@@ -29,6 +30,21 @@ class _UserHomeState extends State<UserHomeScreen> {
       appBar: AppBar(
         title: Text('User home'),
       ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Text(user.displayName ?? 'N/A'),
+              accountEmail: Text(user.email),
+            ),
+            ListTile(
+              leading: Icon(Icons.exit_to_app),
+              title: Text('Sign out'),
+              onTap: con.signOut,
+            ),
+          ],
+        ),
+      ),
       body: Text('User home ${user.email}'),
     );
   }
@@ -37,4 +53,14 @@ class _UserHomeState extends State<UserHomeScreen> {
 class _Controller {
   _UserHomeState state;
   _Controller(this.state);
+
+  void signOut() async {
+    try {
+      await FirebaseController.signOut();
+    } catch (e) {
+      //do nothing
+    }
+    Navigator.of(state.context).pop(); //closing drawer
+    Navigator.of(state.context).pop(); //pop user home screen
+  }
 }
