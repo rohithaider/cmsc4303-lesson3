@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lesson3/controller/firebasecontroller.dart';
 import 'package:lesson3/model/constant.dart';
 import 'package:lesson3/model/photomemo.dart';
 import 'package:lesson3/screen/myview/mydialog.dart';
@@ -129,12 +130,23 @@ class _Controller {
   _Controller(this.state);
   PhotoMemo tempMemo = PhotoMemo();
 
-  void save() {
+  void save() async {
     if (!state.formKey.currentState.validate()) return;
     state.formKey.currentState.save();
     print('=========== ${tempMemo.title}');
     print('=========== ${tempMemo.memo}');
     print('=========== ${tempMemo.sharedWith}');
+
+    try {
+      Map photoInfo = await FirebaseController.uploadPhotoFile(
+        photo: state.photo,
+        uid: state.user.uid,
+      );
+      print('========== filename: ${photoInfo[Constant.ARG_FILENAME]}');
+      print('========== filename: ${photoInfo[Constant.ARG_DOWNLOADURL]}');
+    } catch (e) {
+      print('=========== $e');
+    }
   }
 
   void getPhoto(String src) async {
