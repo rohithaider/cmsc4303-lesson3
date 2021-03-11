@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lesson3/controller/firebasecontroller.dart';
 import 'package:lesson3/model/constant.dart';
+import 'package:lesson3/screen/addphotomemo_screen.dart';
 
 class UserHomeScreen extends StatefulWidget {
   static const routeName = '/userHomeScreen';
@@ -61,7 +62,10 @@ class _UserHomeState extends State<UserHomeScreen> {
 class _Controller {
   _UserHomeState state;
   _Controller(this.state);
-  void addButton() {}
+  void addButton() async {
+    await Navigator.pushNamed(state.context, AddPhotoMemoScreen.routeName,
+        arguments: {Constant.ARG_USER: state.user});
+  }
 
   void signOut() async {
     try {
