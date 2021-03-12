@@ -66,8 +66,21 @@ class _UserHomeState extends State<UserHomeScreen> {
                 itemCount: photoMemoList.length,
                 itemBuilder: (BuildContext context, int index) => ListTile(
                   leading: MyImage.network(
-                      url: photoMemoList[index].photoURL, context: context),
+                    url: photoMemoList[index].photoURL,
+                    context: context,
+                  ),
                   title: Text(photoMemoList[index].title),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(photoMemoList[index].memo.length >= 20
+                          ? photoMemoList[index].memo.substring(0, 20) + '....'
+                          : photoMemoList[index].memo),
+                      Text('Created by: ${photoMemoList[index].createdBy}'),
+                      Text('Shared with: ${photoMemoList[index].sharedWith}'),
+                      Text('Updated at: ${photoMemoList[index].timestamp}'),
+                    ],
+                  ),
                 ),
               ),
       ),
