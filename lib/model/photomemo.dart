@@ -15,7 +15,7 @@ class PhotoMemo {
   static const CREATED_BY = 'createdBy';
   static const PHOTO_URL = 'photoURL';
   static const PHOTO_FILENAME = 'photoFilename';
-  static const TIMESTAMPE = 'timestamp';
+  static const TIMESTAMP = 'timestamp';
   static const SHARED_WITH = 'sharedWith';
   static const IMAGE_LABELS = 'imageLabels';
 
@@ -41,10 +41,27 @@ class PhotoMemo {
       MEMO: this.memo,
       PHOTO_FILENAME: this.photoFileName,
       PHOTO_URL: this.photoURL,
-      TIMESTAMPE: this.timestamp,
+      TIMESTAMP: this.timestamp,
       SHARED_WITH: this.sharedWith,
       IMAGE_LABELS: this.imageLabels,
     };
+  }
+
+  static PhotoMemo deserialize(Map<String, dynamic> doc, String docId) {
+    return PhotoMemo(
+      docId: docId,
+      createdBy: doc[CREATED_BY],
+      title: doc[TITLE],
+      memo: doc[MEMO],
+      photoFileName: doc[PHOTO_FILENAME],
+      photoURL: doc[PHOTO_URL],
+      sharedWith: doc[SHARED_WITH],
+      imageLabels: doc[IMAGE_LABELS],
+      timestamp: doc[TIMESTAMP] == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(
+              doc[TIMESTAMP].fromMillisecondsSinceEpoch),
+    );
   }
 
   static String validateTitle(String value) {

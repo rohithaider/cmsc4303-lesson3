@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lesson3/controller/firebasecontroller.dart';
 import 'package:lesson3/model/constant.dart';
+import 'package:lesson3/model/photomemo.dart';
 import 'package:lesson3/screen/myview/mydialog.dart';
 import 'package:lesson3/screen/userhome_screen.dart';
 
@@ -112,6 +113,13 @@ class _Controller {
       );
       return;
     }
+
+    try {
+      List<PhotoMemo> photoMemoList =
+          await FirebaseController.getPhotoMemoList(email: user.email);
+      print('===photoMemoList: ${photoMemoList.length}');
+    } catch (e) {}
+
     MyDialog.circularProgressStop(state.context);
 
     Navigator.pushNamed(state.context, UserHomeScreen.routeName,

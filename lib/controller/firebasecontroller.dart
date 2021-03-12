@@ -49,4 +49,18 @@ class FirebaseController {
         .add(photoMemo.serialize());
     return ref.id;
   }
+
+  static Future<List<PhotoMemo>> getPhotoMemoList({@required String email}) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection(Constant.PHOTOMEMO_COLLECTION)
+        .where(PhotoMemo.CREATED_BY, isEqualTo: email)
+        .orderBy(PhotoMemo.TIMESTAMP, descending: true)
+        .get();
+
+    var result = <PhotoMemo>[];
+    querySnapshot.docs.forEach((doc) {
+      result.add(PhotoMemo.deserialize(doc.data(), doc.id));
+    });
+    return result;
+  }
 }
