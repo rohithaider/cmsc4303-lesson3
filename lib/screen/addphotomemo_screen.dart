@@ -160,10 +160,19 @@ class _Controller {
           });
         },
       );
+      //image labels by ML
+      state.render(() => state.progressMessage = 'ML Image Labeler Started!');
+
+      List<String> imageLabels =
+          await FirebaseController.getImageLabels(photoFile: state.photo);
+
+      state.render(() => state.progressMessage = null);
+
       tempMemo.photoFileName = photoInfo[Constant.ARG_FILENAME];
       tempMemo.photoURL = photoInfo[Constant.ARG_DOWNLOADURL];
       tempMemo.timestamp = DateTime.now();
       tempMemo.createdBy = state.user.email;
+      tempMemo.imageLabels = imageLabels;
       String docId = await FirebaseController.addPhotoMemo(tempMemo);
       tempMemo.docId = docId;
 

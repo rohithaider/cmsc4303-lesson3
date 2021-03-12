@@ -28,6 +28,7 @@ dependencies:
   firebase_storage: ^7.0.0
   cloud_firestore: ^0.16.0
   image_picker: ^0.6.7+21
+  firebase_ml_vision: ^0.10.0
   
   
 

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:lesson3/model/constant.dart';
@@ -62,5 +63,17 @@ class FirebaseController {
       result.add(PhotoMemo.deserialize(doc.data(), doc.id));
     });
     return result;
+  }
+
+  static Future<List<String>> getImageLabels({@required File photoFile}) async {
+    final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(photoFile);
+    final ImageLabeler cloudLabeler = FirebaseVision.instance.cloudImageLabeler();
+    final List<ImageLabel> cloudLabels = await cloudLabeler.processImage(visionImage);
+    List<String> labels = <String>[];
+    for (ImageLabel label in cloudLabels) {
+      if (label.confidence >= Constant.MIN_ML_CONFIDENCE)
+        labels.add(label.text.toLowerCase());
+    }
+    return labels;
   }
 }
