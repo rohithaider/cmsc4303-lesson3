@@ -19,6 +19,7 @@ class AddPhotoMemoScreen extends StatefulWidget {
 class _AddPhotoMemoState extends State<AddPhotoMemoScreen> {
   _Controller con;
   User user;
+  List<PhotoMemo> photoMemoList;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   File photo;
   String progressMessage;
@@ -34,6 +35,7 @@ class _AddPhotoMemoState extends State<AddPhotoMemoScreen> {
   Widget build(BuildContext context) {
     Map args = ModalRoute.of(context).settings.arguments;
     user ??= args[Constant.ARG_USER];
+    photoMemoList ??= args[Constant.ARG_PHOTOMEMOLIST];
     return Scaffold(
       appBar: AppBar(
         title: Text('Add PhotoMemo'),
@@ -175,6 +177,7 @@ class _Controller {
       tempMemo.imageLabels = imageLabels;
       String docId = await FirebaseController.addPhotoMemo(tempMemo);
       tempMemo.docId = docId;
+      state.photoMemoList.insert(0, tempMemo);
 
       MyDialog.circularProgressStop(state.context);
 

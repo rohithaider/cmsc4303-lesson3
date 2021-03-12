@@ -91,10 +91,18 @@ class _UserHomeState extends State<UserHomeScreen> {
 class _Controller {
   _UserHomeState state;
   _Controller(this.state);
+
   void addButton() async {
-    await Navigator.pushNamed(state.context, AddPhotoMemoScreen.routeName,
-        arguments: {Constant.ARG_USER: state.user});
-  }
+    await Navigator.pushNamed(
+      state.context,
+      AddPhotoMemoScreen.routeName,
+      arguments: {
+        Constant.ARG_USER: state.user,
+        Constant.ARG_PHOTOMEMOLIST: state.photoMemoList,
+      },
+    );
+    state.render(() {});
+  } //re render
 
   void signOut() async {
     try {
