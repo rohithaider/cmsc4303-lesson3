@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lesson3/controller/firebasecontroller.dart';
 import 'package:lesson3/model/constant.dart';
+import 'package:lesson3/model/photomemo.dart';
 import 'package:lesson3/screen/addphotomemo_screen.dart';
 
 class UserHomeScreen extends StatefulWidget {
@@ -15,6 +16,7 @@ class UserHomeScreen extends StatefulWidget {
 class _UserHomeState extends State<UserHomeScreen> {
   _Controller con;
   User user;
+  List<PhotoMemo> photoMemoList;
 
   @override
   void initState() {
@@ -28,6 +30,7 @@ class _UserHomeState extends State<UserHomeScreen> {
   Widget build(BuildContext context) {
     Map args = ModalRoute.of(context).settings.arguments;
     user ??= args[Constant.ARG_USER];
+    photoMemoList ??= args[Constant.ARG_PHOTOMEMOLIST];
     return WillPopScope(
       onWillPop: () => Future.value(false), //android system back button disabled
       child: Scaffold(
@@ -53,7 +56,18 @@ class _UserHomeState extends State<UserHomeScreen> {
           child: Icon(Icons.add),
           onPressed: con.addButton,
         ),
-        body: Text('User home ${user.email}'),
+        body: photoMemoList.length == 0
+            ? Text(
+                'No Photo Memo Found!',
+                style: Theme.of(context).textTheme.headline5,
+              )
+            : ListView.builder(
+                itemCount: photoMemoList.length,
+                itemBuilder: (BuildContext context, int index) => ListTile(
+                  leading: Image.network(photoMemoList[index].photoURL),
+                  title: Text(photoMemoList[index].title),
+                ),
+              ),
       ),
     );
   }

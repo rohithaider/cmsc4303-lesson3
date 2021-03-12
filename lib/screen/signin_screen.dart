@@ -117,12 +117,19 @@ class _Controller {
     try {
       List<PhotoMemo> photoMemoList =
           await FirebaseController.getPhotoMemoList(email: user.email);
-      print('===photoMemoList: ${photoMemoList.length}');
-    } catch (e) {}
+      MyDialog.circularProgressStop(state.context);
 
-    MyDialog.circularProgressStop(state.context);
-
-    Navigator.pushNamed(state.context, UserHomeScreen.routeName,
-        arguments: {Constant.ARG_USER: user});
+      Navigator.pushNamed(state.context, UserHomeScreen.routeName, arguments: {
+        Constant.ARG_USER: user,
+        Constant.ARG_PHOTOMEMOLIST: photoMemoList,
+      });
+    } catch (e) {
+      MyDialog.circularProgressStop(state.context);
+      MyDialog.info(
+        context: state.context,
+        title: 'Firestore GetPhotoMemoList error',
+        content: '$e',
+      );
+    }
   }
 }

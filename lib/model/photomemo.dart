@@ -59,8 +59,7 @@ class PhotoMemo {
       imageLabels: doc[IMAGE_LABELS],
       timestamp: doc[TIMESTAMP] == null
           ? null
-          : DateTime.fromMillisecondsSinceEpoch(
-              doc[TIMESTAMP].fromMillisecondsSinceEpoch),
+          : DateTime.fromMillisecondsSinceEpoch(doc[TIMESTAMP].millisecondsSinceEpoch),
     );
   }
 
