@@ -4,6 +4,7 @@ import 'package:lesson3/controller/firebasecontroller.dart';
 import 'package:lesson3/model/constant.dart';
 import 'package:lesson3/model/photomemo.dart';
 import 'package:lesson3/screen/addphotomemo_screen.dart';
+import 'package:lesson3/screen/myview/myimage.dart';
 
 class UserHomeScreen extends StatefulWidget {
   static const routeName = '/userHomeScreen';
@@ -64,7 +65,8 @@ class _UserHomeState extends State<UserHomeScreen> {
             : ListView.builder(
                 itemCount: photoMemoList.length,
                 itemBuilder: (BuildContext context, int index) => ListTile(
-                  leading: Image.network(photoMemoList[index].photoURL),
+                  leading: MyImage.network(
+                      url: photoMemoList[index].photoURL, context: context),
                   title: Text(photoMemoList[index].title),
                 ),
               ),
