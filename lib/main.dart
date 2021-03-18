@@ -4,6 +4,7 @@ import 'package:lesson3/model/constant.dart';
 import 'package:lesson3/screen/addphotomemo_screen.dart';
 import 'package:lesson3/screen/detailedview_scree.dart';
 import 'package:lesson3/screen/signin_screen.dart';
+import 'package:lesson3/screen/signup_screen.dart';
 import 'package:lesson3/screen/userhome_screen.dart';
 
 void main() async {
@@ -27,6 +28,7 @@ class lesson3 extends StatelessWidget {
         UserHomeScreen.routeName: (context) => UserHomeScreen(),
         AddPhotoMemoScreen.routeName: (context) => AddPhotoMemoScreen(),
         DetailedViewScreen.routeName: (context) => DetailedViewScreen(),
+        SignUpScreen.routeName: (context) => SignUpScreen(),
       },
     );
   }

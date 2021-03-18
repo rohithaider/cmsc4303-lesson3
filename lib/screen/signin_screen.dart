@@ -4,6 +4,7 @@ import 'package:lesson3/controller/firebasecontroller.dart';
 import 'package:lesson3/model/constant.dart';
 import 'package:lesson3/model/photomemo.dart';
 import 'package:lesson3/screen/myview/mydialog.dart';
+import 'package:lesson3/screen/signup_screen.dart';
 import 'package:lesson3/screen/userhome_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -162,5 +163,9 @@ class _Controller {
 
   void signUp() {
     //navigate to sign up screen
+    Navigator.pushNamed(
+      state.context,
+      SignUpScreen.routeName,
+    );
   }
 }
