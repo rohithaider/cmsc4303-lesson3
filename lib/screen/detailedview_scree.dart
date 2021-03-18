@@ -197,6 +197,7 @@ class _Controller {
       if (photoFile != null) {
         Map photoInfo = await FirebaseController.uploadPhotoFile(
           photo: photoFile,
+          filename: state.onePhotoMemoTemp.photoFileName,
           uid: state.user.uid,
           listener: (double message) {
             state.render(() {
@@ -211,7 +212,7 @@ class _Controller {
         );
         state.onePhotoMemoTemp.photoURL = photoInfo[Constant.ARG_DOWNLOADURL];
         state.render(() => state.progressMessage = 'ML image labeler started');
-        List<String> labels =
+        List<dynamic> labels =
             await FirebaseController.getImageLabels(photoFile: photoFile);
         state.onePhotoMemoTemp.imageLabels = labels;
         updateInfo[PhotoMemo.PHOTO_URL] = photoInfo[Constant.ARG_DOWNLOADURL];

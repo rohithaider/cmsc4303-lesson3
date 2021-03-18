@@ -73,11 +73,11 @@ class FirebaseController {
     return result;
   }
 
-  static Future<List<String>> getImageLabels({@required File photoFile}) async {
+  static Future<List<dynamic>> getImageLabels({@required File photoFile}) async {
     final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(photoFile);
     final ImageLabeler cloudLabeler = FirebaseVision.instance.cloudImageLabeler();
     final List<ImageLabel> cloudLabels = await cloudLabeler.processImage(visionImage);
-    List<String> labels = <String>[];
+    List<dynamic> labels = <dynamic>[];
     for (ImageLabel label in cloudLabels) {
       if (label.confidence >= Constant.MIN_ML_CONFIDENCE)
         labels.add(label.text.toLowerCase());
