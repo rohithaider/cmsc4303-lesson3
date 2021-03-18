@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lesson3/controller/firebasecontroller.dart';
+import 'package:lesson3/screen/myview/mydialog.dart';
 
 class SignUpScreen extends StatefulWidget {
   static const routeName = '/signUpScreen';
@@ -44,8 +46,8 @@ class _SignUpState extends State<SignUpScreen> {
                     ),
                     keyboardType: TextInputType.emailAddress,
                     autocorrect: false,
-                    validator: null,
-                    onSaved: null,
+                    validator: con.validateEmail,
+                    onSaved: con.saveEmail,
                   ),
                   TextFormField(
                     decoration: InputDecoration(
@@ -53,8 +55,8 @@ class _SignUpState extends State<SignUpScreen> {
                     ),
                     obscureText: true,
                     autocorrect: false,
-                    validator: null,
-                    onSaved: null,
+                    validator: con.validatePassword,
+                    onSaved: con.savePassword,
                   ),
                   TextFormField(
                     decoration: InputDecoration(
@@ -62,11 +64,19 @@ class _SignUpState extends State<SignUpScreen> {
                     ),
                     obscureText: true,
                     autocorrect: false,
-                    validator: null,
-                    onSaved: null,
+                    validator: con.validatePassword,
+                    onSaved: con.savePasswordConfirm,
                   ),
+                  con.passwordErrorMessage == null
+                      ? SizedBox(
+                          height: 1,
+                        )
+                      : Text(
+                          con.passwordErrorMessage,
+                          style: TextStyle(color: Colors.red, fontSize: 14),
+                        ),
                   RaisedButton(
-                    onPressed: null,
+                    onPressed: con.createAccount,
                     child: Text(
                       'Create',
                       style: Theme.of(context).textTheme.button,
@@ -85,4 +95,59 @@ class _SignUpState extends State<SignUpScreen> {
 class _Controller {
   _SignUpState state;
   _Controller(this.state);
+  String email;
+  String password;
+  String passwordConfirm;
+  String passwordErrorMessage;
+
+  void createAccount() async {
+    if (!state.formkey.currentState.validate()) return;
+    passwordErrorMessage = null;
+    state.formkey.currentState.save();
+
+    if (password != passwordConfirm) {
+      state.render(() => passwordErrorMessage = 'passwords do not match');
+
+      return;
+    }
+    try {
+      await FirebaseController.createAccount(email: email, password: password);
+      MyDialog.info(
+          context: state.context,
+          title: 'Account created',
+          content: ' Go to sign in to use the app');
+    } catch (e) {
+      MyDialog.info(
+        context: state.context,
+        title: 'Can not create',
+        content: '$e',
+      );
+    }
+  }
+
+  String validateEmail(String value) {
+    if (value.contains('@') && value.contains('.'))
+      return null;
+    else
+      return 'invalid email';
+  }
+
+  void saveEmail(String value) {
+    email = value;
+  }
+
+  String validatePassword(String value) {
+    if (value.length < 6)
+      return 'too short';
+    else
+      return null;
+  }
+
+  void savePassword(String value) {
+    password = value;
+  }
+
+  void savePasswordConfirm(String value) {
+    passwordConfirm = value;
+  }
 }
