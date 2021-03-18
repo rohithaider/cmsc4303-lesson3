@@ -10,6 +10,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpState extends State<SignUpScreen> {
   _Controller con;
+  GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -25,7 +26,58 @@ class _SignUpState extends State<SignUpScreen> {
       appBar: AppBar(
         title: Text('Create an acoount'),
       ),
-      body: Text('sign up'),
+      body: Padding(
+        padding: const EdgeInsets.only(
+          top: 15,
+          left: 15,
+        ),
+        child: Form(
+          key: formkey,
+          child: SingleChildScrollView(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Text('Create an account', style: Theme.of(context).textTheme.headline5),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    autocorrect: false,
+                    validator: null,
+                    onSaved: null,
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                    ),
+                    obscureText: true,
+                    autocorrect: false,
+                    validator: null,
+                    onSaved: null,
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      hintText: 'Password confirm',
+                    ),
+                    obscureText: true,
+                    autocorrect: false,
+                    validator: null,
+                    onSaved: null,
+                  ),
+                  RaisedButton(
+                    onPressed: null,
+                    child: Text(
+                      'Create',
+                      style: Theme.of(context).textTheme.button,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
