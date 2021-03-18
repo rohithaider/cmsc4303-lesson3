@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lesson3/model/constant.dart';
 import 'package:lesson3/model/photomemo.dart';
+import 'package:lesson3/screen/myview/mydialog.dart';
 import 'package:lesson3/screen/myview/myimage.dart';
 
 class DetailedViewScreen extends StatefulWidget {
@@ -120,7 +122,7 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                 initialValue: onePhotoMemoTemp.title,
                 autocorrect: true,
                 validator: PhotoMemo.validateTitle,
-                onSaved: null,
+                onSaved: con.saveTitle,
               ),
               TextFormField(
                 enabled: editMode,
@@ -132,7 +134,7 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                 keyboardType: TextInputType.multiline,
                 maxLines: 6,
                 validator: PhotoMemo.validateMemo,
-                onSaved: null,
+                onSaved: con.saveMemo,
               ),
               TextFormField(
                 enabled: editMode,
@@ -144,7 +146,7 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                 keyboardType: TextInputType.multiline,
                 maxLines: 2,
                 validator: PhotoMemo.validateSharedWith,
-                onSaved: null,
+                onSaved: con.saveSharedWith,
               ),
               SizedBox(
                 height: 5,
@@ -176,12 +178,42 @@ class _Controller {
   File photoFile;
 
   void update() {
-    state.render(() => state.editMode = false);
+    if (!state.formKey.currentState.validate()) return;
+    state.formKey.currentState.save();
+    //state.render(() => state.editMode = false);
   }
 
   void edit() {
     state.render(() => state.editMode = true);
   }
 
-  void getPhoto(String src) {}
+  void getPhoto(String src) async {
+    try {
+      PickedFile _photoFile;
+      if (src == Constant.SRC_CAMERA) {
+        _photoFile = await ImagePicker().getImage(source: ImageSource.camera);
+      } else {
+        _photoFile = await ImagePicker().getImage(source: ImageSource.gallery);
+      }
+      if (_photoFile == null) return;
+      state.render(() => photoFile = File(_photoFile.path));
+    } catch (e) {
+      MyDialog.info(context: state.context, title: 'getPhoto error', content: '$e');
+    }
+  }
+
+  void saveTitle(String value) {
+    state.onePhotoMemoTemp.title = value;
+  }
+
+  void saveMemo(String value) {
+    state.onePhotoMemoTemp.memo = value;
+  }
+
+  void saveSharedWith(String value) {
+    if (value.trim().length != 0) {
+      state.onePhotoMemoTemp.sharedWith =
+          value.split(RegExp('(,| )+')).map((e) => e.trim()).toList();
+    }
+  }
 }
