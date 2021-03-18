@@ -17,7 +17,8 @@ class DetailedViewScreen extends StatefulWidget {
 class _DetailedViewState extends State<DetailedViewScreen> {
   _Controller con;
   User user;
-  PhotoMemo onePhotoMemo;
+  PhotoMemo onePhotoMemoOriginal;
+  PhotoMemo onePhotoMemoTemp;
 
   bool editMode = false;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -34,7 +35,8 @@ class _DetailedViewState extends State<DetailedViewScreen> {
   Widget build(BuildContext context) {
     Map args = ModalRoute.of(context).settings.arguments;
     user ??= args[Constant.ARG_USER];
-    onePhotoMemo ??= args[Constant.ARG_ONE_PHOTOMEMO];
+    onePhotoMemoOriginal ??= args[Constant.ARG_ONE_PHOTOMEMO];
+    onePhotoMemoTemp ??= PhotoMemo.clone(onePhotoMemoOriginal);
     return Scaffold(
       appBar: AppBar(
         title: Text('Detailed view'),
@@ -61,7 +63,7 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                     height: MediaQuery.of(context).size.height * .4,
                     child: con.photoFile == null
                         ? MyImage.network(
-                            url: onePhotoMemo.photoURL,
+                            url: onePhotoMemoTemp.photoURL,
                             context: context,
                           )
                         : Image.file(
@@ -115,7 +117,7 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                 decoration: InputDecoration(
                   hintText: 'Enter title',
                 ),
-                initialValue: onePhotoMemo.title,
+                initialValue: onePhotoMemoTemp.title,
                 autocorrect: true,
                 validator: PhotoMemo.validateTitle,
                 onSaved: null,
@@ -125,7 +127,7 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                 decoration: InputDecoration(
                   hintText: 'Enter memo',
                 ),
-                initialValue: onePhotoMemo.memo,
+                initialValue: onePhotoMemoTemp.memo,
                 autocorrect: true,
                 keyboardType: TextInputType.multiline,
                 maxLines: 6,
@@ -137,7 +139,7 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                 decoration: InputDecoration(
                   hintText: 'Enter shared with (email list0',
                 ),
-                initialValue: onePhotoMemo.sharedWith.join('.'),
+                initialValue: onePhotoMemoTemp.sharedWith.join('.'),
                 autocorrect: true,
                 keyboardType: TextInputType.multiline,
                 maxLines: 2,
@@ -156,7 +158,7 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                       height: 1,
                     ),
               Constant.DEV
-                  ? Text(onePhotoMemo.imageLabels.join(' | '))
+                  ? Text(onePhotoMemoTemp.imageLabels.join(' | '))
                   : SizedBox(
                       height: 1,
                     ),
