@@ -78,7 +78,15 @@ class _SignInState extends State<SignInScreen> {
                     'Sign in',
                     style: Theme.of(context).textTheme.button,
                   ),
-                )
+                ),
+                SizedBox(height: 15),
+                RaisedButton(
+                  onPressed: con.signUp,
+                  child: Text(
+                    'Create a new account',
+                    style: Theme.of(context).textTheme.button,
+                  ),
+                ),
               ],
             ),
           ),
@@ -150,5 +158,9 @@ class _Controller {
         content: '$e',
       );
     }
+  }
+
+  void signUp() {
+    //navigate to sign up screen
   }
 }
