@@ -74,7 +74,7 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                           right: 0,
                           bottom: 21,
                           child: Container(
-                            color: Colors.red[100],
+                            color: Colors.blue[500],
                             child: PopupMenuButton<String>(
                               onSelected: con.getPhoto,
                               itemBuilder: (context) => [
@@ -82,7 +82,10 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                                   value: Constant.SRC_CAMERA,
                                   child: Row(
                                     children: [
-                                      Icon(Icons.photo_camera),
+                                      Icon(
+                                        Icons.photo_camera,
+                                        color: Colors.red,
+                                      ),
                                       Text(Constant.SRC_CAMERA),
                                     ],
                                   ),
@@ -91,7 +94,10 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                                   value: Constant.SRC_GALLERY,
                                   child: Row(
                                     children: [
-                                      Icon(Icons.photo_library),
+                                      Icon(
+                                        Icons.photo_library,
+                                        color: Colors.green,
+                                      ),
                                       Text(Constant.SRC_GALLERY),
                                     ],
                                   ),
