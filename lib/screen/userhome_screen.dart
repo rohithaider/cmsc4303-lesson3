@@ -125,5 +125,6 @@ class _Controller {
         Constant.ARG_ONE_PHOTOMEMO: state.photoMemoList[index],
       },
     );
+    state.render(() {});
   }
 }

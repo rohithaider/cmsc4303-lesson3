@@ -84,4 +84,12 @@ class FirebaseController {
     }
     return labels;
   }
+
+  static Future<void> updatePhotoMemo(
+      String docId, Map<String, dynamic> updateInfo) async {
+    await FirebaseFirestore.instance
+        .collection(Constant.PHOTOMEMO_COLLECTION)
+        .doc(docId)
+        .update(updateInfo);
+  }
 }
