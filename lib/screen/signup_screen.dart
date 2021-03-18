@@ -102,7 +102,7 @@ class _Controller {
 
   void createAccount() async {
     if (!state.formkey.currentState.validate()) return;
-    passwordErrorMessage = null;
+    state.render(() => passwordErrorMessage = null);
     state.formkey.currentState.save();
 
     if (password != passwordConfirm) {
