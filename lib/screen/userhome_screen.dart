@@ -183,5 +183,20 @@ class _Controller {
     state.render(() => delIndex = null);
   }
 
-  void delete() {}
+  void delete() async {
+    try {
+      PhotoMemo p = state.photoMemoList[delIndex];
+      await FirebaseController.deletePhotoMemo(p);
+      state.render(() {
+        state.photoMemoList.removeAt(delIndex);
+        delIndex = null;
+      });
+    } catch (e) {
+      MyDialog.info(
+        context: state.context,
+        title: 'Delete photo memo error',
+        content: '$e',
+      );
+    }
+  }
 }
