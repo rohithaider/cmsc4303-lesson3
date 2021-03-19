@@ -72,24 +72,30 @@ class _UserHomeState extends State<UserHomeScreen> {
               )
             : ListView.builder(
                 itemCount: photoMemoList.length,
-                itemBuilder: (BuildContext context, int index) => ListTile(
-                  leading: MyImage.network(
-                    url: photoMemoList[index].photoURL,
-                    context: context,
+                itemBuilder: (BuildContext context, int index) => Container(
+                  color: con.delIndex != null && con.delIndex == index
+                      ? Theme.of(context).highlightColor
+                      : Theme.of(context).scaffoldBackgroundColor,
+                  child: ListTile(
+                    leading: MyImage.network(
+                      url: photoMemoList[index].photoURL,
+                      context: context,
+                    ),
+                    title: Text(photoMemoList[index].title),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(photoMemoList[index].memo.length >= 20
+                            ? photoMemoList[index].memo.substring(0, 20) + '....'
+                            : photoMemoList[index].memo),
+                        Text('Created by: ${photoMemoList[index].createdBy}'),
+                        Text('Shared with: ${photoMemoList[index].sharedWith}'),
+                        Text('Updated at: ${photoMemoList[index].timestamp}'),
+                      ],
+                    ),
+                    onTap: () => con.onTap(index),
+                    onLongPress: () => con.onLongPress(index),
                   ),
-                  title: Text(photoMemoList[index].title),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(photoMemoList[index].memo.length >= 20
-                          ? photoMemoList[index].memo.substring(0, 20) + '....'
-                          : photoMemoList[index].memo),
-                      Text('Created by: ${photoMemoList[index].createdBy}'),
-                      Text('Shared with: ${photoMemoList[index].sharedWith}'),
-                      Text('Updated at: ${photoMemoList[index].timestamp}'),
-                    ],
-                  ),
-                  onTap: () => con.onTap(index),
                 ),
               ),
       ),
@@ -100,6 +106,7 @@ class _UserHomeState extends State<UserHomeScreen> {
 class _Controller {
   _UserHomeState state;
   _Controller(this.state);
+  int delIndex;
 
   void addButton() async {
     await Navigator.pushNamed(
@@ -152,5 +159,9 @@ class _Controller {
         content: '$e',
       );
     }
+  }
+
+  void onLongPress(int index) {
+    state.render(() => delIndex = index);
   }
 }
