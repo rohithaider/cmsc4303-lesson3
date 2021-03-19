@@ -5,6 +5,7 @@ import 'package:lesson3/model/constant.dart';
 import 'package:lesson3/model/photomemo.dart';
 import 'package:lesson3/screen/addphotomemo_screen.dart';
 import 'package:lesson3/screen/detailedview_scree.dart';
+import 'package:lesson3/screen/myview/mydialog.dart';
 import 'package:lesson3/screen/myview/myimage.dart';
 import 'package:lesson3/screen/sharedwith_screen.dart';
 
@@ -134,7 +135,22 @@ class _Controller {
     state.render(() {});
   }
 
-  void sharedWithMe() {
-    Navigator.pushNamed(state.context, SharedWithScreen.routeName);
+  void sharedWithMe() async {
+    try {
+      List<PhotoMemo> photoMemoList = await FirebaseController.getPhotoMemoSharedWithMe(
+        email: state.user.email,
+      );
+      await Navigator.pushNamed(state.context, SharedWithScreen.routeName, arguments: {
+        Constant.ARG_USER: state.user,
+        Constant.ARG_PHOTOMEMOLIST: photoMemoList,
+      });
+      Navigator.pop(state.context);
+    } catch (e) {
+      MyDialog.info(
+        context: state.context,
+        title: 'Get shared photoMemo error',
+        content: '$e',
+      );
+    }
   }
 }

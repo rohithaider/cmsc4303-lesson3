@@ -92,4 +92,19 @@ class FirebaseController {
         .doc(docId)
         .update(updateInfo);
   }
+
+  static Future<List<PhotoMemo>> getPhotoMemoSharedWithMe(
+      {@required String email}) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection(Constant.PHOTOMEMO_COLLECTION)
+        .where(PhotoMemo.SHARED_WITH, arrayContains: email)
+        .orderBy(PhotoMemo.TIMESTAMP, descending: true)
+        .get();
+
+    var result = <PhotoMemo>[];
+    querySnapshot.docs.forEach((doc) {
+      result.add(PhotoMemo.deserialize(doc.data(), doc.id));
+    });
+    return result;
+  }
 }
