@@ -40,6 +40,18 @@ class _UserHomeState extends State<UserHomeScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('User home'),
+          actions: [
+            con.delIndex != null
+                ? IconButton(icon: Icon(Icons.cancel), onPressed: con.cancelDelete)
+                : SizedBox(
+                    width: 1,
+                  ),
+            con.delIndex != null
+                ? IconButton(icon: Icon(Icons.delete), onPressed: con.delete)
+                : SizedBox(
+                    width: 1,
+                  ),
+          ],
         ),
         drawer: Drawer(
           child: ListView(
@@ -131,6 +143,7 @@ class _Controller {
   }
 
   void onTap(int index) async {
+    if (delIndex != null) return;
     await Navigator.pushNamed(
       state.context,
       DetailedViewScreen.routeName,
@@ -162,6 +175,13 @@ class _Controller {
   }
 
   void onLongPress(int index) {
+    if (delIndex != null) return;
     state.render(() => delIndex = index);
   }
+
+  void cancelDelete() {
+    state.render(() => delIndex = null);
+  }
+
+  void delete() {}
 }
