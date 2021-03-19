@@ -21,6 +21,7 @@ class _UserHomeState extends State<UserHomeScreen> {
   _Controller con;
   User user;
   List<PhotoMemo> photoMemoList;
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -39,17 +40,33 @@ class _UserHomeState extends State<UserHomeScreen> {
       onWillPop: () => Future.value(false), //android system back button disabled
       child: Scaffold(
         appBar: AppBar(
-          title: Text('User home'),
+          //title: Text('User home'),
           actions: [
             con.delIndex != null
                 ? IconButton(icon: Icon(Icons.cancel), onPressed: con.cancelDelete)
-                : SizedBox(
-                    width: 1,
+                : Form(
+                    key: formKey,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * .7,
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            hintText: 'Search',
+                            fillColor: Theme.of(context).backgroundColor,
+                            filled: true,
+                          ),
+                          autocorrect: true,
+                          onSaved: con.saveSearchKeyString,
+                        ),
+                      ),
+                    ),
                   ),
             con.delIndex != null
                 ? IconButton(icon: Icon(Icons.delete), onPressed: con.delete)
-                : SizedBox(
-                    width: 1,
+                : IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: con.search,
                   ),
           ],
         ),
@@ -57,13 +74,22 @@ class _UserHomeState extends State<UserHomeScreen> {
           child: ListView(
             children: [
               UserAccountsDrawerHeader(
-                accountName: Text(user.displayName ?? 'N/A'),
+                currentAccountPicture: Icon(
+                  Icons.person,
+                  size: 100,
+                ),
+                accountName: Text('Not set'),
                 accountEmail: Text(user.email),
               ),
               ListTile(
                 leading: Icon(Icons.people),
                 title: Text('Shared with me'),
                 onTap: con.sharedWithMe,
+              ),
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text('Settings'),
+                onTap: null,
               ),
               ListTile(
                 leading: Icon(Icons.exit_to_app),
@@ -93,6 +119,7 @@ class _UserHomeState extends State<UserHomeScreen> {
                       url: photoMemoList[index].photoURL,
                       context: context,
                     ),
+                    trailing: Icon(Icons.keyboard_arrow_right),
                     title: Text(photoMemoList[index].title),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,6 +146,7 @@ class _Controller {
   _UserHomeState state;
   _Controller(this.state);
   int delIndex;
+  String keyString;
 
   void addButton() async {
     await Navigator.pushNamed(
@@ -197,6 +225,33 @@ class _Controller {
         title: 'Delete photo memo error',
         content: '$e',
       );
+    }
+  }
+
+  void saveSearchKeyString(String value) {
+    keyString = value;
+  }
+
+  void search() async {
+    state.formKey.currentState.save();
+    var keys = keyString.split('.').toList();
+    List<String> searchKeys = [];
+    for (var k in keys) {
+      if (k.trim().isNotEmpty) searchKeys.add(k.trim().toLowerCase());
+    }
+    try {
+      List<PhotoMemo> results;
+      if (searchKeys.isNotEmpty) {
+        results = await FirebaseController.searchImage(
+          createdBy: state.user.email,
+          searchLabels: searchKeys,
+        );
+      } else {
+        results = await FirebaseController.getPhotoMemoList(email: state.user.email);
+      }
+      state.render(() => state.photoMemoList = results);
+    } catch (e) {
+      MyDialog.info(context: state.context, title: 'Search error', content: '$e');
     }
   }
 }
