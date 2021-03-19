@@ -6,6 +6,7 @@ import 'package:lesson3/model/photomemo.dart';
 import 'package:lesson3/screen/addphotomemo_screen.dart';
 import 'package:lesson3/screen/detailedview_scree.dart';
 import 'package:lesson3/screen/myview/myimage.dart';
+import 'package:lesson3/screen/sharedwith_screen.dart';
 
 class UserHomeScreen extends StatefulWidget {
   static const routeName = '/userHomeScreen';
@@ -45,6 +46,11 @@ class _UserHomeState extends State<UserHomeScreen> {
               UserAccountsDrawerHeader(
                 accountName: Text(user.displayName ?? 'N/A'),
                 accountEmail: Text(user.email),
+              ),
+              ListTile(
+                leading: Icon(Icons.people),
+                title: Text('Shared with me'),
+                onTap: con.sharedWithMe,
               ),
               ListTile(
                 leading: Icon(Icons.exit_to_app),
@@ -126,5 +132,9 @@ class _Controller {
       },
     );
     state.render(() {});
+  }
+
+  void sharedWithMe() {
+    Navigator.pushNamed(state.context, SharedWithScreen.routeName);
   }
 }
