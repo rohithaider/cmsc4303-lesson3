@@ -85,13 +85,22 @@ class FirebaseController {
     return labels;
   }
 
-  static Future<void> updatePhotoMemo(
-      String docId, Map<String, dynamic> updateInfo) async {
+  static Future<void> updatePhotoMemo(String docId, Map<String, dynamic> updateInfo) async {
     await FirebaseFirestore.instance
         .collection(Constant.PHOTOMEMO_COLLECTION)
         .doc(docId)
         .update(updateInfo);
   }
+
+
+  static Future<void> updateCommentMemo(String docId, PhotoMemo photoMemo) async {
+    await FirebaseFirestore.instance
+        .collection(Constant.PHOTOMEMO_COLLECTION)
+        .doc(docId)
+        .update(photoMemo.serialize()).then((value) => print(" comment is done"));
+  }
+
+
 
   static Future<List<PhotoMemo>> getPhotoMemoSharedWithMe(
       {@required String email}) async {

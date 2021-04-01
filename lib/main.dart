@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:lesson3/model/constant.dart';
 import 'package:lesson3/screen/addphotomemo_screen.dart';
+import 'package:lesson3/screen/comment_screen.dart';
 import 'package:lesson3/screen/detailedview_scree.dart';
 import 'package:lesson3/screen/sharedwith_screen.dart';
 import 'package:lesson3/screen/signin_screen.dart';
@@ -31,6 +32,7 @@ class lesson3 extends StatelessWidget {
         DetailedViewScreen.routeName: (context) => DetailedViewScreen(),
         SignUpScreen.routeName: (context) => SignUpScreen(),
         SharedWithScreen.routeName: (context) => SharedWithScreen(),
+        CommentScreen.routeName:(context)=>CommentScreen(),
       },
     );
   }

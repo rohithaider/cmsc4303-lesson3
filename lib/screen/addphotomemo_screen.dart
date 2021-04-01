@@ -175,8 +175,10 @@ class _Controller {
       tempMemo.timestamp = DateTime.now();
       tempMemo.createdBy = state.user.email;
       tempMemo.imageLabels = imageLabels;
+      tempMemo.comment = [{"email":"to@gmail.com","comment":"i love this memo"}];
       String docId = await FirebaseController.addPhotoMemo(tempMemo);
       tempMemo.docId = docId;
+
       state.photoMemoList.insert(0, tempMemo);
 
       MyDialog.circularProgressStop(state.context);

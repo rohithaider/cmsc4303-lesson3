@@ -9,6 +9,8 @@ import 'package:lesson3/screen/myview/mydialog.dart';
 import 'package:lesson3/screen/myview/myimage.dart';
 import 'package:lesson3/screen/sharedwith_screen.dart';
 
+import 'comment_screen.dart';
+
 class UserHomeScreen extends StatefulWidget {
   static const routeName = '/userHomeScreen';
   @override
@@ -119,7 +121,17 @@ class _UserHomeState extends State<UserHomeScreen> {
                       url: photoMemoList[index].photoURL,
                       context: context,
                     ),
-                    trailing: Icon(Icons.keyboard_arrow_right),
+                    trailing: Expanded(
+                      child: Column(
+                        children: [
+                          // Icon(Icons.keyboard_arrow_right),
+                          IconButton(icon: Icon(Icons.comment), onPressed: (){
+                            goToCommentScreen(photoMemoList[index]);
+                          })
+
+                        ],
+                      ),
+                    ),
                     title: Text(photoMemoList[index].title),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,6 +151,14 @@ class _UserHomeState extends State<UserHomeScreen> {
               ),
       ),
     );
+  }
+
+  Future<void> goToCommentScreen(PhotoMemo photoMemo) async {
+
+    await Navigator.pushNamed(context, CommentScreen.routeName, arguments: {
+      Constant.ARG_COMMENT: photoMemo,
+      Constant.ARG_USER: user,
+    });
   }
 }
 

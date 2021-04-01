@@ -8,6 +8,7 @@ class PhotoMemo {
   DateTime timestamp;
   List<dynamic> sharedWith; //list of email
   List<dynamic> imageLabels; //image identidfied my machine learning
+  List<dynamic> comment;
 
   // key for Firestore document
   static const TITLE = 'title';
@@ -18,6 +19,7 @@ class PhotoMemo {
   static const TIMESTAMP = 'timestamp';
   static const SHARED_WITH = 'sharedWith';
   static const IMAGE_LABELS = 'imageLabels';
+  static const COMMENT = 'comments';
 
   PhotoMemo({
     this.docId,
@@ -29,9 +31,11 @@ class PhotoMemo {
     this.title,
     this.sharedWith,
     this.imageLabels,
+    this.comment,
   }) {
     this.sharedWith ??= [];
     this.imageLabels ??= [];
+    this.comment ??= [];
   }
 
   PhotoMemo.clone(PhotoMemo p) {
@@ -46,6 +50,7 @@ class PhotoMemo {
     this.sharedWith.addAll(p.sharedWith); //deep copy
     this.imageLabels = [];
     this.imageLabels.addAll(p.imageLabels); //deep copy
+    this.comment?.add(p.comment);
   }
   void assign(PhotoMemo p) {
     this.docId = p.docId;
@@ -59,6 +64,7 @@ class PhotoMemo {
     this.sharedWith.add(p.sharedWith);
     this.imageLabels.clear();
     this.imageLabels.addAll(p.imageLabels);
+    this.comment.add(p.comment);
   }
 
 //from dart object to firestore document
@@ -72,6 +78,7 @@ class PhotoMemo {
       TIMESTAMP: this.timestamp,
       SHARED_WITH: this.sharedWith,
       IMAGE_LABELS: this.imageLabels,
+      COMMENT: this.comment
     };
   }
 
@@ -88,6 +95,7 @@ class PhotoMemo {
       timestamp: doc[TIMESTAMP] == null
           ? null
           : DateTime.fromMillisecondsSinceEpoch(doc[TIMESTAMP].millisecondsSinceEpoch),
+      comment: doc[COMMENT],
     );
   }
 

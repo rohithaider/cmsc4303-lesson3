@@ -12,6 +12,7 @@ class Constant {
 
   static const ARG_DOWNLOADURL = 'downloadurl';
   static const ARG_FILENAME = 'filename';
+  static const ARG_COMMENT = 'comment_data';
 
   static const MIN_ML_CONFIDENCE = 0.7;
 }

@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lesson3/controller/firebasecontroller.dart';
 import 'package:lesson3/model/constant.dart';
 import 'package:lesson3/model/photomemo.dart';
+import 'package:lesson3/screen/comment_screen.dart';
 import 'package:lesson3/screen/myview/myimage.dart';
 
 class SharedWithScreen extends StatefulWidget {
@@ -68,11 +70,32 @@ class _SharedWithState extends State<SharedWithScreen> {
                     Text(
                       'Shared with: ${photoMemoList[index].sharedWith}',
                     ),
+                    Container(
+                      child: Row(
+                        children: [
+
+                          IconButton(icon: Icon(Icons.comment),onPressed: (){
+                            goToCommentScreen(photoMemoList[index]);
+                          }),
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),
             ),
     );
+  }
+
+
+  void goToCommentScreen(PhotoMemo photoMemo) async{
+    // photoMemo.comment = [{"email":"to@gmail.com","comment":"bad image "}];
+    // await FirebaseController.updateCommentMemo(photoMemo.docId, photoMemo);
+
+    await Navigator.pushNamed(context, CommentScreen.routeName, arguments: {
+      Constant.ARG_COMMENT: photoMemo,
+      Constant.ARG_USER: user,
+    });
   }
 }
 
