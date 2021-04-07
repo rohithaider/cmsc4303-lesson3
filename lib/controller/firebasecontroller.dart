@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -74,6 +75,7 @@ class FirebaseController {
   }
 
   static Future<List<dynamic>> getImageLabels({@required File photoFile}) async {
+    print("ML labeler is running ");
     final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(photoFile);
     final ImageLabeler cloudLabeler = FirebaseVision.instance.cloudImageLabeler();
     final List<ImageLabel> cloudLabels = await cloudLabeler.processImage(visionImage);
@@ -84,6 +86,24 @@ class FirebaseController {
     }
     return labels;
   }
+
+  static Future<List<dynamic>> getImageLabelsByTxtRecognization({@required File photoFile}) async {
+    print("ML image text recognition is running ");
+    final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(photoFile);
+    final TextRecognizer textRecognizer = FirebaseVision.instance.cloudTextRecognizer();
+    final VisionText visionText = await textRecognizer.processImage(visionImage);
+    List<dynamic> labels = <dynamic>[];
+
+    String text = visionText.text;
+    print("text from image $text");
+    for (TextBlock block in visionText.blocks) {
+      String value = block.text.toString().replaceAll("\n", "");
+      labels.add(value);
+    }
+    return labels;
+  }
+
+
 
   static Future<void> updatePhotoMemo(String docId, Map<String, dynamic> updateInfo) async {
     await FirebaseFirestore.instance
@@ -98,6 +118,14 @@ class FirebaseController {
         .collection(Constant.PHOTOMEMO_COLLECTION)
         .doc(docId)
         .update(photoMemo.serialize()).then((value) => print(" comment is done"));
+  }
+
+
+  static Future<void> updateLike(String docId, PhotoMemo photoMemo) async {
+    await FirebaseFirestore.instance
+        .collection(Constant.PHOTOMEMO_COLLECTION)
+        .doc(docId)
+        .update(photoMemo.serialize()).then((value) => print(" like is done"));
   }
 
 
@@ -116,6 +144,26 @@ class FirebaseController {
     });
     return result;
   }
+  static Future<List<PhotoMemo>> getPhotoMemoSharedWithMeRealtime(
+      {@required String email}) async {
+    var result = <PhotoMemo>[];
+    StreamSubscription querySnapshot = await FirebaseFirestore.instance
+        .collection(Constant.PHOTOMEMO_COLLECTION)
+        .where(PhotoMemo.SHARED_WITH, arrayContains: email)
+        .orderBy(PhotoMemo.TIMESTAMP, descending: true)
+        .snapshots().listen((snapshot) {
+        snapshot.docChanges.forEach((element) {
+          print("snapshot: $element");
+        });
+
+    });
+    //
+
+    // querySnapshot.docs.forEach((doc) {
+    //   result.add(PhotoMemo.deserialize(doc.data(), doc.id));
+    // });
+    return result;
+  }
 
   static Future<void> deletePhotoMemo(PhotoMemo p) async {
     await FirebaseFirestore.instance
@@ -123,6 +171,14 @@ class FirebaseController {
         .doc(p.docId)
         .delete();
     await FirebaseStorage.instance.ref().child(p.photoFileName).delete();
+  }
+
+
+  static Future<void> deleteComment(PhotoMemo p) async {
+    await FirebaseFirestore.instance
+        .collection(Constant.PHOTOMEMO_COLLECTION)
+        .doc(p.docId)
+        .update({"comments":p.comment});
   }
 
   static Future<List<PhotoMemo>> searchImage({

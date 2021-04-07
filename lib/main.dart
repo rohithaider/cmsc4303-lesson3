@@ -4,6 +4,7 @@ import 'package:lesson3/model/constant.dart';
 import 'package:lesson3/screen/addphotomemo_screen.dart';
 import 'package:lesson3/screen/comment_screen.dart';
 import 'package:lesson3/screen/detailedview_scree.dart';
+import 'package:lesson3/screen/like_screen.dart';
 import 'package:lesson3/screen/sharedwith_screen.dart';
 import 'package:lesson3/screen/signin_screen.dart';
 import 'package:lesson3/screen/signup_screen.dart';
@@ -33,6 +34,7 @@ class lesson3 extends StatelessWidget {
         SignUpScreen.routeName: (context) => SignUpScreen(),
         SharedWithScreen.routeName: (context) => SharedWithScreen(),
         CommentScreen.routeName:(context)=>CommentScreen(),
+        LikeScreen.routeName:(context)=>LikeScreen(),
       },
     );
   }

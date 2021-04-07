@@ -16,6 +16,8 @@ class AddPhotoMemoScreen extends StatefulWidget {
   }
 }
 
+enum SingingCharacter { Imagelabeler, TextRecognition }
+
 class _AddPhotoMemoState extends State<AddPhotoMemoScreen> {
   _Controller con;
   User user;
@@ -23,6 +25,7 @@ class _AddPhotoMemoState extends State<AddPhotoMemoScreen> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   File photo;
   String progressMessage;
+  SingingCharacter _character = SingingCharacter.Imagelabeler;
 
   @override
   void initState() {
@@ -41,94 +44,130 @@ class _AddPhotoMemoState extends State<AddPhotoMemoScreen> {
         title: Text('Add PhotoMemo'),
         actions: [IconButton(icon: Icon(Icons.check), onPressed: con.save)],
       ),
-      body: Form(
-        key: formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    child: photo == null
-                        ? Icon(
-                            Icons.photo_library,
-                            size: 300,
-                          )
-                        : Image.file(
-                            photo,
-                            fit: BoxFit.fill,
-                          ),
-                  ),
-                  Positioned(
-                    right: 0.0,
-                    bottom: 0.0,
-                    child: Container(
-                      color: Colors.blue[200],
-                      child: PopupMenuButton<String>(
-                        onSelected: con.getPhoto,
-                        itemBuilder: (context) => <PopupMenuEntry<String>>[
-                          PopupMenuItem(
-                            value: Constant.SRC_CAMERA,
-                            child: Row(
-                              children: [
-                                Icon(Icons.photo_camera),
-                                Text(Constant.SRC_CAMERA),
-                              ],
-                            ),
-                          ),
-                          PopupMenuItem(
-                            value: Constant.SRC_GALLERY,
-                            child: Row(
-                              children: [
-                                Icon(Icons.photo_album),
-                                Text(Constant.SRC_GALLERY),
-                              ],
-                            ),
-                          ),
-                        ],
+      body: Container(
+        margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
+        child: Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.4,
+                      child: photo == null
+                          ? Icon(
+                        Icons.photo_library,
+                        size: 300,
+                      )
+                          : Image.file(
+                        photo,
+                        fit: BoxFit.fill,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              progressMessage == null
-                  ? SizedBox(
-                      height: 1,
-                    )
-                  : Text(
-                      progressMessage,
-                      style: Theme.of(context).textTheme.headline6,
+                    Positioned(
+                      right: 0.0,
+                      bottom: 0.0,
+                      child: Container(
+                        color: Colors.blue[200],
+                        child: PopupMenuButton<String>(
+                          onSelected: con.getPhoto,
+                          itemBuilder: (context) => <PopupMenuEntry<String>>[
+                            PopupMenuItem(
+                              value: Constant.SRC_CAMERA,
+                              child: Row(
+                                children: [
+                                  Icon(Icons.photo_camera),
+                                  Text(Constant.SRC_CAMERA),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: Constant.SRC_GALLERY,
+                              child: Row(
+                                children: [
+                                  Icon(Icons.photo_album),
+                                  Text(Constant.SRC_GALLERY),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-              TextFormField(
-                decoration: InputDecoration(
-                  hintText: 'Title',
+                  ],
                 ),
-                autocorrect: true,
-                validator: PhotoMemo.validateMemo,
-                onSaved: con.saveTitle,
-              ),
-              TextFormField(
-                decoration: InputDecoration(
-                  hintText: 'Memo',
+                progressMessage == null
+                    ? SizedBox(
+                  height: 1,
+                )
+                    : Text(
+                  progressMessage,
+                  style: Theme.of(context).textTheme.headline6,
                 ),
-                autocorrect: true,
-                keyboardType: TextInputType.multiline,
-                maxLines: 6,
-                validator: PhotoMemo.validateMemo,
-                onSaved: con.saveMemo,
-              ),
-              TextFormField(
-                decoration: InputDecoration(
-                  hintText: 'SharedWith (comma seperated email list)',
+                TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'Title',
+                  ),
+                  autocorrect: true,
+                  validator: PhotoMemo.validateMemo,
+                  onSaved: con.saveTitle,
                 ),
-                autocorrect: false,
-                keyboardType: TextInputType.emailAddress,
-                maxLines: 2,
-                validator: PhotoMemo.validateSharedWith,
-                onSaved: con.saveSharedWith,
-              ),
-            ],
+                TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'Memo',
+                  ),
+                  autocorrect: true,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 6,
+                  validator: PhotoMemo.validateMemo,
+                  onSaved: con.saveMemo,
+                ),
+                TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'SharedWith (comma seperated email list)',
+                  ),
+                  autocorrect: false,
+                  keyboardType: TextInputType.emailAddress,
+                  maxLines: 2,
+                  validator: PhotoMemo.validateSharedWith,
+                  onSaved: con.saveSharedWith,
+                ),
+
+                Column(
+                  children: <Widget>[
+                    ListTile(
+                      title: const Text('ML Image Labeler (Default)'),
+                      leading: Radio<SingingCharacter>(
+                        value: SingingCharacter.Imagelabeler,
+                        groupValue: _character,
+                        onChanged: (SingingCharacter value) {
+                          setState(() {
+                            _character = value;
+                            print("ML type is $_character");
+                          });
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text('ML Image Text Recognition'),
+                      leading: Radio<SingingCharacter>(
+                        value: SingingCharacter.TextRecognition,
+                        groupValue: _character,
+                        onChanged: (SingingCharacter value) {
+                          setState(() {
+                            _character = value;
+                            print("ML type is $_character");
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                )
+
+
+              ],
+            ),
           ),
         ),
       ),
@@ -165,8 +204,18 @@ class _Controller {
       //image labels by ML
       state.render(() => state.progressMessage = 'ML Image Labeler Started!');
 
-      List<dynamic> imageLabels =
-          await FirebaseController.getImageLabels(photoFile: state.photo);
+      List<dynamic> imageLabels;
+      if(state._character==SingingCharacter.Imagelabeler){
+        imageLabels = await FirebaseController.getImageLabels(photoFile: state.photo);
+      }else{
+        imageLabels = await FirebaseController.getImageLabelsByTxtRecognization(photoFile: state.photo);
+      }
+      // List<dynamic> imageLabels =
+      //     await FirebaseController.getImageLabels(photoFile: state.photo);
+
+
+      // List<dynamic> imageLabels =
+      //     await FirebaseController.getImageLabelsByTxtRecognization(photoFile: state.photo);
 
       state.render(() => state.progressMessage = null);
 
@@ -175,7 +224,7 @@ class _Controller {
       tempMemo.timestamp = DateTime.now();
       tempMemo.createdBy = state.user.email;
       tempMemo.imageLabels = imageLabels;
-      tempMemo.comment = [{"email":"to@gmail.com","comment":"i love this memo"}];
+      // tempMemo.comment = [{"email":"to@gmail.com","comment":"i love this memo"}];
       String docId = await FirebaseController.addPhotoMemo(tempMemo);
       tempMemo.docId = docId;
 

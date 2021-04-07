@@ -5,6 +5,7 @@ import 'package:lesson3/model/constant.dart';
 import 'package:lesson3/model/photomemo.dart';
 import 'package:lesson3/screen/addphotomemo_screen.dart';
 import 'package:lesson3/screen/detailedview_scree.dart';
+import 'package:lesson3/screen/like_screen.dart';
 import 'package:lesson3/screen/myview/mydialog.dart';
 import 'package:lesson3/screen/myview/myimage.dart';
 import 'package:lesson3/screen/sharedwith_screen.dart';
@@ -123,12 +124,14 @@ class _UserHomeState extends State<UserHomeScreen> {
                     ),
                     trailing: Expanded(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           // Icon(Icons.keyboard_arrow_right),
-                          IconButton(icon: Icon(Icons.comment), onPressed: (){
-                            goToCommentScreen(photoMemoList[index]);
-                          })
-
+                          IconButton(
+                              icon: Icon(Icons.comment),
+                              onPressed: () {
+                                goToCommentScreen(photoMemoList[index]);
+                              }),
                         ],
                       ),
                     ),
@@ -142,6 +145,24 @@ class _UserHomeState extends State<UserHomeScreen> {
                         Text('Created by: ${photoMemoList[index].createdBy}'),
                         Text('Shared with: ${photoMemoList[index].sharedWith}'),
                         Text('Updated at: ${photoMemoList[index].timestamp}'),
+                        InkWell(
+                          onTap: () {
+                            goToLikeScreen(photoMemoList[index]);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.all(0),
+                            child: Row(
+                              children: [
+                                IconButton(
+                                    icon: Icon(Icons.favorite),
+                                    onPressed: () {
+                                      goToLikeScreen(photoMemoList[index]);
+                                    }),
+                                Text(photoMemoList[index].like.length.toString())
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     onTap: () => con.onTap(index),
@@ -154,9 +175,15 @@ class _UserHomeState extends State<UserHomeScreen> {
   }
 
   Future<void> goToCommentScreen(PhotoMemo photoMemo) async {
-
     await Navigator.pushNamed(context, CommentScreen.routeName, arguments: {
       Constant.ARG_COMMENT: photoMemo,
+      Constant.ARG_USER: user,
+    });
+  }
+
+  Future<void> goToLikeScreen(PhotoMemo photoMemo) async {
+    await Navigator.pushNamed(context, LikeScreen.routeName, arguments: {
+      Constant.ARG_LIKE: photoMemo,
       Constant.ARG_USER: user,
     });
   }

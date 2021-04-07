@@ -31,60 +31,86 @@ class _SharedWithState extends State<SharedWithScreen> {
     Map args = ModalRoute.of(context).settings.arguments;
     user ??= args[Constant.ARG_USER];
     photoMemoList ??= args[Constant.ARG_PHOTOMEMOLIST];
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Shared with me'),
       ),
       body: photoMemoList.length == 0
           ? Text(
-              'No Photo memo shared with me',
-              style: Theme.of(context).textTheme.headline5,
-            )
+        'No Photo memo shared with me',
+        style: Theme.of(context).textTheme.headline5,
+      )
           : ListView.builder(
-              itemCount: photoMemoList.length,
-              itemBuilder: (context, index) => Card(
-                elevation: 7,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * .4,
-                        child: MyImage.network(
-                          url: photoMemoList[index].photoURL,
-                          context: context,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      'Title: ${photoMemoList[index].title}',
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    Text('Memo: ${photoMemoList[index].memo}'),
-                    Text(
-                      'Created by: ${photoMemoList[index].createdBy}',
-                    ),
-                    Text(
-                      'Updated at: ${photoMemoList[index].timestamp}',
-                    ),
-                    Text(
-                      'Shared with: ${photoMemoList[index].sharedWith}',
-                    ),
-                    Container(
-                      child: Row(
-                        children: [
-
-                          IconButton(icon: Icon(Icons.comment),onPressed: (){
-                            goToCommentScreen(photoMemoList[index]);
-                          }),
-                        ],
-                      ),
-                    )
-                  ],
+        itemCount: photoMemoList.length,
+        itemBuilder: (context, index) => Card(
+          elevation: 7,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  height: MediaQuery.of(context).size.height * .4,
+                  child: MyImage.network(
+                    url: photoMemoList[index].photoURL,
+                    context: context,
+                  ),
                 ),
               ),
-            ),
+              Text(
+                'Title: ${photoMemoList[index].title}',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              Text('Memo: ${photoMemoList[index].memo}'),
+              Text(
+                'Created by: ${photoMemoList[index].createdBy}',
+              ),
+              Text(
+                'Updated at: ${photoMemoList[index].timestamp}',
+              ),
+              Text(
+                'Shared with: ${photoMemoList[index].sharedWith}',
+              ),
+              Container(
+                child: Row(
+                  children: [
+                    IconButton(
+                        icon: Icon(Icons.comment),
+                        onPressed: (){
+                          goToCommentScreen(photoMemoList[index]);
+                        }),
+                    IconButton(
+                        icon: photoMemoList[index].like.contains(user.email)?Icon(Icons.favorite):Icon(Icons.favorite_outline),
+                        onPressed: (){
+                          toggleLikeAtIndex(photoMemoList[index]);
+                        }),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
     );
+  }
+
+
+
+
+  void toggleLikeAtIndex(PhotoMemo item) async{
+
+    if(!item.like.contains(user.email)){
+      item.like.add(user.email);
+    }else{
+      item.like.remove(user.email);
+    }
+
+    await FirebaseController.updateLike(item.docId, item);
+
+    setState(() {
+      print("isliked ");
+      print(item.like);
+    });
   }
 
 

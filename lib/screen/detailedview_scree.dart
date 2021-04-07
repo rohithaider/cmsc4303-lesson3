@@ -27,6 +27,7 @@ class _DetailedViewState extends State<DetailedViewScreen> {
   bool editMode = false;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   String progressMessage;
+  bool isliked = false;
 
   @override
   void initState() {
@@ -42,6 +43,10 @@ class _DetailedViewState extends State<DetailedViewScreen> {
     user ??= args[Constant.ARG_USER];
     onePhotoMemoOriginal ??= args[Constant.ARG_ONE_PHOTOMEMO];
     onePhotoMemoTemp ??= PhotoMemo.clone(onePhotoMemoOriginal);
+
+    if(onePhotoMemoOriginal.like.contains(user.email)){
+      isliked = true;
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text('Detailed view'),
@@ -60,128 +65,163 @@ class _DetailedViewState extends State<DetailedViewScreen> {
       body: Form(
         key: formKey,
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * .4,
-                    child: con.photoFile == null
-                        ? MyImage.network(
-                            url: onePhotoMemoTemp.photoURL,
-                            context: context,
-                          )
-                        : Image.file(
-                            con.photoFile,
-                            fit: BoxFit.fill,
-                          ),
-                  ),
-                  editMode
-                      ? Positioned(
-                          right: 0,
-                          bottom: 21,
-                          child: Container(
-                            color: Colors.blue[500],
-                            child: PopupMenuButton<String>(
-                              onSelected: con.getPhoto,
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  value: Constant.SRC_CAMERA,
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.photo_camera,
-                                        color: Colors.red,
-                                      ),
-                                      Text(Constant.SRC_CAMERA),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  value: Constant.SRC_GALLERY,
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.photo_library,
-                                        color: Colors.green,
-                                      ),
-                                      Text(Constant.SRC_GALLERY),
-                                    ],
-                                  ),
-                                ),
-                              ],
+          child: Container(
+            margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * .4,
+                      child: con.photoFile == null
+                          ? MyImage.network(
+                              url: onePhotoMemoTemp.photoURL,
+                              context: context,
+                            )
+                          : Image.file(
+                              con.photoFile,
+                              fit: BoxFit.fill,
                             ),
-                          ),
-                        )
-                      : SizedBox(height: 1),
-                ],
-              ),
-              progressMessage == null
-                  ? SizedBox(
-                      height: 1,
-                    )
-                  : Text(
-                      progressMessage,
-                      style: Theme.of(context).textTheme.headline6,
                     ),
-              TextFormField(
-                enabled: editMode,
-                style: Theme.of(context).textTheme.headline6,
-                decoration: InputDecoration(
-                  hintText: 'Enter title',
+                    editMode
+                        ? Positioned(
+                            right: 0,
+                            bottom: 21,
+                            child: Container(
+                              color: Colors.blue[500],
+                              child: PopupMenuButton<String>(
+                                onSelected: con.getPhoto,
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                    value: Constant.SRC_CAMERA,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.photo_camera,
+                                          color: Colors.red,
+                                        ),
+                                        Text(Constant.SRC_CAMERA),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: Constant.SRC_GALLERY,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.photo_library,
+                                          color: Colors.green,
+                                        ),
+                                        Text(Constant.SRC_GALLERY),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : SizedBox(height: 1),
+                  ],
                 ),
-                initialValue: onePhotoMemoTemp.title,
-                autocorrect: true,
-                validator: PhotoMemo.validateTitle,
-                onSaved: con.saveTitle,
-              ),
-              TextFormField(
-                enabled: editMode,
-                decoration: InputDecoration(
-                  hintText: 'Enter memo',
+                progressMessage == null
+                    ? SizedBox(
+                        height: 1,
+                      )
+                    : Text(
+                        progressMessage,
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                TextFormField(
+                  enabled: editMode,
+                  style: Theme.of(context).textTheme.headline6,
+                  decoration: InputDecoration(
+                    hintText: 'Enter title',
+                  ),
+                  initialValue: onePhotoMemoTemp.title,
+                  autocorrect: true,
+                  validator: PhotoMemo.validateTitle,
+                  onSaved: con.saveTitle,
                 ),
-                initialValue: onePhotoMemoTemp.memo,
-                autocorrect: true,
-                keyboardType: TextInputType.multiline,
-                maxLines: 6,
-                validator: PhotoMemo.validateMemo,
-                onSaved: con.saveMemo,
-              ),
-              TextFormField(
-                enabled: editMode,
-                decoration: InputDecoration(
-                  hintText: 'Enter shared with (email list0',
+                TextFormField(
+                  enabled: editMode,
+                  decoration: InputDecoration(
+                    hintText: 'Enter memo',
+                  ),
+                  initialValue: onePhotoMemoTemp.memo,
+                  autocorrect: true,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 6,
+                  validator: PhotoMemo.validateMemo,
+                  onSaved: con.saveMemo,
                 ),
-                initialValue: onePhotoMemoTemp.sharedWith.join('.'),
-                autocorrect: true,
-                keyboardType: TextInputType.multiline,
-                maxLines: 2,
-                validator: PhotoMemo.validateSharedWith,
-                onSaved: con.saveSharedWith,
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Constant.DEV
-                  ? Text(
-                      'Image Labels generated by ML',
-                      style: Theme.of(context).textTheme.bodyText1,
-                    )
-                  : SizedBox(
-                      height: 1,
-                    ),
-              Constant.DEV
-                  ? Text(onePhotoMemoTemp.imageLabels.join(' | '))
-                  : SizedBox(
-                      height: 1,
-                    ),
-            ],
+                TextFormField(
+                  enabled: editMode,
+                  decoration: InputDecoration(
+                    hintText: 'Enter shared with (email list0',
+                  ),
+                  initialValue: onePhotoMemoTemp.sharedWith.join('.'),
+                  autocorrect: true,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 2,
+                  validator: PhotoMemo.validateSharedWith,
+                  onSaved: con.saveSharedWith,
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Constant.DEV
+                    ? Text(
+                        'Image Labels generated by ML',
+                        style: Theme.of(context).textTheme.bodyText1,
+                      )
+                    : SizedBox(
+                        height: 1,
+                      ),
+                Constant.DEV
+                    ? Text(onePhotoMemoTemp.imageLabels.join(' | '))
+                    : SizedBox(
+                        height: 1,
+                      ),
+              ],
+            ),
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: isliked?Icon(Icons.favorite):Icon(Icons.favorite_outline),
+        onPressed: (){
+          isliked = !isliked;
+          toggleLike();
+        },
+      ),
     );
   }
+
+
+
+  void toggleLike() async{
+
+
+    if(isliked){
+      onePhotoMemoOriginal.like.add(user.email);
+    }else{
+      onePhotoMemoOriginal.like.remove(user.email);
+    }
+
+
+
+
+
+    await FirebaseController.updateLike(onePhotoMemoOriginal.docId, onePhotoMemoOriginal);
+
+    setState(() {
+      print("isliked : $isliked");
+      print(onePhotoMemoOriginal.like);
+    });
+  }
 }
+
+
 
 class _Controller {
   _DetailedViewState state;
