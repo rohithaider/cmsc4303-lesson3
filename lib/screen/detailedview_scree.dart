@@ -44,7 +44,7 @@ class _DetailedViewState extends State<DetailedViewScreen> {
     onePhotoMemoOriginal ??= args[Constant.ARG_ONE_PHOTOMEMO];
     onePhotoMemoTemp ??= PhotoMemo.clone(onePhotoMemoOriginal);
 
-    if(onePhotoMemoOriginal.like.contains(user.email)){
+    if(onePhotoMemoOriginal.like?.contains(user.email)){
       isliked = true;
     }
     return Scaffold(
@@ -53,13 +53,13 @@ class _DetailedViewState extends State<DetailedViewScreen> {
         actions: [
           editMode
               ? IconButton(
-                  icon: Icon(Icons.check),
-                  onPressed: con.update,
-                )
+            icon: Icon(Icons.check),
+            onPressed: con.update,
+          )
               : IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: con.edit,
-                ),
+            icon: Icon(Icons.edit),
+            onPressed: con.edit,
+          ),
         ],
       ),
       body: Form(
@@ -75,62 +75,62 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                       height: MediaQuery.of(context).size.height * .4,
                       child: con.photoFile == null
                           ? MyImage.network(
-                              url: onePhotoMemoTemp.photoURL,
-                              context: context,
-                            )
+                        url: onePhotoMemoTemp.photoURL,
+                        context: context,
+                      )
                           : Image.file(
-                              con.photoFile,
-                              fit: BoxFit.fill,
-                            ),
+                        con.photoFile,
+                        fit: BoxFit.fill,
+                      ),
                     ),
                     editMode
                         ? Positioned(
-                            right: 0,
-                            bottom: 21,
-                            child: Container(
-                              color: Colors.blue[500],
-                              child: PopupMenuButton<String>(
-                                onSelected: con.getPhoto,
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    value: Constant.SRC_CAMERA,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.photo_camera,
-                                          color: Colors.red,
-                                        ),
-                                        Text(Constant.SRC_CAMERA),
-                                      ],
-                                    ),
+                      right: 0,
+                      bottom: 21,
+                      child: Container(
+                        color: Colors.blue[500],
+                        child: PopupMenuButton<String>(
+                          onSelected: con.getPhoto,
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: Constant.SRC_CAMERA,
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.photo_camera,
+                                    color: Colors.red,
                                   ),
-                                  PopupMenuItem(
-                                    value: Constant.SRC_GALLERY,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.photo_library,
-                                          color: Colors.green,
-                                        ),
-                                        Text(Constant.SRC_GALLERY),
-                                      ],
-                                    ),
-                                  ),
+                                  Text(Constant.SRC_CAMERA),
                                 ],
                               ),
                             ),
-                          )
+                            PopupMenuItem(
+                              value: Constant.SRC_GALLERY,
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.photo_library,
+                                    color: Colors.green,
+                                  ),
+                                  Text(Constant.SRC_GALLERY),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                         : SizedBox(height: 1),
                   ],
                 ),
                 progressMessage == null
                     ? SizedBox(
-                        height: 1,
-                      )
+                  height: 1,
+                )
                     : Text(
-                        progressMessage,
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
+                  progressMessage,
+                  style: Theme.of(context).textTheme.headline6,
+                ),
                 TextFormField(
                   enabled: editMode,
                   style: Theme.of(context).textTheme.headline6,
@@ -171,17 +171,17 @@ class _DetailedViewState extends State<DetailedViewScreen> {
                 ),
                 Constant.DEV
                     ? Text(
-                        'Image Labels generated by ML',
-                        style: Theme.of(context).textTheme.bodyText1,
-                      )
+                  'Image Labels generated by ML',
+                  style: Theme.of(context).textTheme.bodyText1,
+                )
                     : SizedBox(
-                        height: 1,
-                      ),
+                  height: 1,
+                ),
                 Constant.DEV
                     ? Text(onePhotoMemoTemp.imageLabels.join(' | '))
                     : SizedBox(
-                        height: 1,
-                      ),
+                  height: 1,
+                ),
               ],
             ),
           ),
@@ -210,9 +210,12 @@ class _DetailedViewState extends State<DetailedViewScreen> {
 
 
 
+    onePhotoMemoTemp.like = onePhotoMemoOriginal.like;
 
+    if(!editMode){
+      await FirebaseController.updateLike(onePhotoMemoOriginal.docId, onePhotoMemoOriginal);
+    }
 
-    await FirebaseController.updateLike(onePhotoMemoOriginal.docId, onePhotoMemoOriginal);
 
     setState(() {
       print("isliked : $isliked");
@@ -253,7 +256,7 @@ class _Controller {
         state.onePhotoMemoTemp.photoURL = photoInfo[Constant.ARG_DOWNLOADURL];
         state.render(() => state.progressMessage = 'ML image labeler started');
         List<dynamic> labels =
-            await FirebaseController.getImageLabels(photoFile: photoFile);
+        await FirebaseController.getImageLabels(photoFile: photoFile);
         state.onePhotoMemoTemp.imageLabels = labels;
         updateInfo[PhotoMemo.PHOTO_URL] = photoInfo[Constant.ARG_DOWNLOADURL];
         updateInfo[PhotoMemo.IMAGE_LABELS] = labels;
@@ -263,11 +266,23 @@ class _Controller {
       if (state.onePhotoMemoOriginal.memo != state.onePhotoMemoTemp.memo)
         updateInfo[PhotoMemo.MEMO] = state.onePhotoMemoTemp.memo;
       if (!listEquals(
-          state.onePhotoMemoOriginal.sharedWith, state.onePhotoMemoTemp.sharedWith))
+          state.onePhotoMemoOriginal.sharedWith, state.onePhotoMemoTemp.sharedWith)
+      )
+
         updateInfo[PhotoMemo.SHARED_WITH] = state.onePhotoMemoTemp.sharedWith;
+
+      if(state.onePhotoMemoTemp.like==null){
+        state.onePhotoMemoTemp.like = [];
+      }else{
+        updateInfo[PhotoMemo.LIKE] = state.onePhotoMemoTemp.like;
+      }
+
+
+
 
       updateInfo[PhotoMemo.TIMESTAMP] = DateTime.now();
       await FirebaseController.updatePhotoMemo(state.onePhotoMemoTemp.docId, updateInfo);
+      // await FirebaseController.updateLike(state.onePhotoMemoOriginal.docId, state.onePhotoMemoOriginal);
 
       state.onePhotoMemoOriginal.assign(state.onePhotoMemoTemp);
       MyDialog.circularProgressStop(state.context);

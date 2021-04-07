@@ -23,23 +23,22 @@ class PhotoMemo {
   static const COMMENT = 'comments';
   static const LIKE = 'likes';
 
-  PhotoMemo({
-    this.docId,
-    this.createdBy,
-    this.memo,
-    this.photoFileName,
-    this.photoURL,
-    this.timestamp,
-    this.title,
-    this.sharedWith,
-    this.imageLabels,
-    this.comment,
-    this.like
-  }) {
+  PhotoMemo(
+      {this.docId,
+      this.createdBy,
+      this.memo,
+      this.photoFileName,
+      this.photoURL,
+      this.timestamp,
+      this.title,
+      this.sharedWith,
+      this.imageLabels,
+      this.comment,
+      this.like}) {
     this.sharedWith ??= [];
     this.imageLabels ??= [];
     this.comment ??= [];
-    this.like??=[];
+    this.like ??= [];
   }
 
   PhotoMemo.clone(PhotoMemo p) {
@@ -66,11 +65,11 @@ class PhotoMemo {
     this.title = p.title;
     this.timestamp = p.timestamp;
     this.sharedWith.clear();
-    this.sharedWith.add(p.sharedWith);
+    this.sharedWith = p.sharedWith;
     this.imageLabels.clear();
     this.imageLabels.addAll(p.imageLabels);
-    this.comment.add(p.comment);
-    this.like.add(p.like);
+    this.comment = p.comment;
+    this.like = p.like;
   }
 
 //from dart object to firestore document
@@ -85,7 +84,7 @@ class PhotoMemo {
       SHARED_WITH: this.sharedWith,
       IMAGE_LABELS: this.imageLabels,
       COMMENT: this.comment,
-      LIKE:this.like,
+      LIKE: this.like,
     };
   }
 
