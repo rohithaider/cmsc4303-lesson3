@@ -117,7 +117,7 @@ class FirebaseController {
     await FirebaseFirestore.instance
         .collection(Constant.PHOTOMEMO_COLLECTION)
         .doc(docId)
-        .update(photoMemo.serialize()).then((value) => print(" comment is done"));
+        .update(photoMemo.serialize()).then((value) => print(" comment  is done"));
   }
 
 

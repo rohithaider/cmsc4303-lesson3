@@ -5,6 +5,7 @@ import 'dart:core';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lesson3/controller/firebasecontroller.dart';
+import 'package:lesson3/model/comment.dart';
 import 'package:lesson3/model/constant.dart';
 import '../model/photomemo.dart';
 
@@ -21,6 +22,9 @@ class _CommentScreenState extends State<CommentScreen> {
   List<dynamic> commentList = [];
   PhotoMemo photoMemo;
   User user;
+  bool _isCommentEditEnable = false;
+  int _editCommentIndex = -1;
+
   final commentController = TextEditingController();
   @override
   void initState() {
@@ -37,6 +41,7 @@ class _CommentScreenState extends State<CommentScreen> {
     user ??= args[Constant.ARG_USER];
 
     commentList = photoMemo.comment;
+    print("main data: $commentList");
     return Scaffold(
         appBar: AppBar(title: Text("Comment")),
         body: Stack(
@@ -55,8 +60,16 @@ class _CommentScreenState extends State<CommentScreen> {
                   child: ListView.builder(
                     itemBuilder: (context,index){
                       Map<String,String> newItem;
-                      newItem = {"email":commentList[index]["email"],"comment":commentList[index]["comment"]};
-                      return item(newItem,index);
+                      print("online data : ${commentList[index]["like"]}");
+                      // newItem = {"email":commentList[index]["email"],"comment":commentList[index]["comment"],"like":commentList[index]};
+                      var commentItem = Comment(
+                          email:commentList[index]["email"],
+                          comment: commentList[index]["comment"],
+                          like:commentList[index]["like"]
+                      );
+
+                      print("comment json data : ${commentItem.toJson().toString()}");
+                      return item(commentItem,index);
                     },
                     itemCount: commentList.length,
 
@@ -115,39 +128,165 @@ class _CommentScreenState extends State<CommentScreen> {
   }
 
 
-  Widget item(Map<String,String> item,int index){
+  void _editComment(String comment,index){
+
+
+    setState(() {
+      _isCommentEditEnable = true;
+      commentController.text = comment;
+      _editCommentIndex = index;
+    });
+
+    print("edit  for comment: ${commentController.text} and index $_editCommentIndex");
+
+
+  }
+
+
+  // Widget item(Map<String,String> item,int index){
+  //   return Card(
+  //     elevation: 7,
+  //     child:InkWell(
+  //       onLongPress:(){
+  //
+  //         _editComment(item["comment"],index);
+  //       },
+  //       child: Container(child: Column(
+  //         children: [
+  //           Container(
+  //               margin: EdgeInsets.all(5),
+  //               alignment: Alignment.bottomLeft,
+  //               child: Row(
+  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                 children: [
+  //                   Expanded(child: Text(item["comment"],style: TextStyle(fontSize: 18),)),
+  //
+  //                   IconButton(
+  //                     alignment: Alignment.topRight,
+  //                     icon: Icon(Icons.delete_forever),
+  //                     color: Colors.red,
+  //                     onPressed: (){
+  //                       if(user.email==item["email"]){
+  //                         deleteComment(index);
+  //                       }
+  //
+  //                     },
+  //                   )
+  //                 ],
+  //               )
+  //           ),
+  //           Container(
+  //               margin: EdgeInsets.all(2),
+  //               alignment: Alignment.bottomRight,
+  //               child: Row(
+  //                 children: [
+  //                   Expanded(
+  //                     child: Row(
+  //                       children: [
+  //                         IconButton(
+  //                           alignment: Alignment.topRight,
+  //                           icon: Icon(Icons.favorite),
+  //                           color: Colors.red,
+  //                           onPressed: (){
+  //                             if(user.email==item["email"]){
+  //                                 _likeComment(item, index);
+  //                             }
+  //
+  //                           },
+  //                         ),
+  //
+  //                         Padding(
+  //                           padding: const EdgeInsets.all(8.0),
+  //                           child: Text("0"),
+  //                         )
+  //                       ],
+  //                     ),
+  //                   ),
+  //                   Container(
+  //                     margin: EdgeInsets.all(5.0),
+  //                     child:user.email==item["email"]?Text("By You"):Text("By "+item["email"]) ,
+  //                   )
+  //
+  //                 ],
+  //               )
+  //           )
+  //         ],
+  //       )),
+  //     ),
+  //   );
+  // }
+  Widget item(Comment item,int index){
     return Card(
       elevation: 7,
-      child:Container(child: Column(
-        children: [
-          Container(
-              margin: EdgeInsets.all(5),
-              alignment: Alignment.bottomLeft,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(child: Text(item["comment"],style: TextStyle(fontSize: 18),)),
-                  IconButton(
-                    alignment: Alignment.topRight,
-                    icon: Icon(Icons.delete_forever),
-                    color: Colors.red,
-                    onPressed: (){
-                      if(user.email==item["email"]){
-                        deleteComment(index);
-                      }
+      child:InkWell(
+        onLongPress:(){
+          if(user.email==item.email){
+            _editComment(item.comment,index);
+          }
 
-                    },
-                  )
-                ],
-              )
-          ),
-          Container(
-              margin: EdgeInsets.all(2),
-              alignment: Alignment.bottomRight,
-              child: user.email==item["email"]?Text("By You"):Text("By "+item["email"])
-          )
-        ],
-      )),
+        },
+        child: Container(child: Column(
+          children: [
+            Container(
+                margin: EdgeInsets.all(5),
+                alignment: Alignment.bottomLeft,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(child: Text(item.comment,style: TextStyle(fontSize: 18),)),
+
+                    IconButton(
+                      alignment: Alignment.topRight,
+                      icon: Icon(Icons.delete_forever),
+                      color: Colors.red,
+                      onPressed: (){
+                        if(user.email==item.email){
+                          deleteComment(index);
+                        }
+
+                      },
+                    )
+                  ],
+                )
+            ),
+            Container(
+                margin: EdgeInsets.all(2),
+                alignment: Alignment.bottomRight,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          IconButton(
+                            alignment: Alignment.topRight,
+                            icon: item.like.contains(user.email)?Icon(Icons.favorite):Icon(Icons.favorite_outline),
+                            color: Colors.red,
+                            onPressed: (){
+                              // if(user.email==item.email){
+                                  _likeComment(item, index);
+                              // }
+
+                            },
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(item.like.length.toString()),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(5.0),
+                      child:user.email==item.email?Text("By You"):Text("By "+item.email) ,
+                    )
+
+                  ],
+                )
+            )
+          ],
+        )),
+      ),
     );
   }
 
@@ -160,16 +299,59 @@ class _CommentScreenState extends State<CommentScreen> {
     commentController.dispose();
   }
 
-  void saveComment() async{
-    String comment  = commentController.text;
-    print("comment by user is : $comment");
-    // photoMemo.comment = [{"email":"to@gmail.com","comment":comment}];
-    photoMemo.comment.add({"email":user.email,"comment":comment});
+
+  void _likeComment(Comment item,int index) async{
+
+      print("before like 1 ${item.toJson().toString()}");
+      if(!item.like.contains(user.email)){
+        print('true');
+        item.like.add(user.email);
+      }else{
+        print(false);
+        item.like.remove(user.email);
+      }
+
+      photoMemo.comment.removeAt(index);
+      photoMemo.comment.insert(index,item.toJson());
+
+      print("after like ${photoMemo.comment}");
+
+
+
     await FirebaseController.updateCommentMemo(photoMemo.docId, photoMemo);
     setState(() {
       commentList = photoMemo.comment;
       commentController.text = "";
     });
+
+    // print("commentlist is give : $commentList");
+    print(commentList);
+  }
+
+  void saveComment() async{
+    String comment  = commentController.text;
+    print("comment by user is : $comment");
+    var commentobj = Comment(email: user.email,comment: comment);
+    if(_isCommentEditEnable){
+      photoMemo.comment.removeAt(_editCommentIndex);
+      photoMemo.comment.insert(_editCommentIndex, commentobj.toJson());
+      print("comment json object ${commentobj.toJson().toString()}");
+    }else{
+      photoMemo.comment.add(commentobj.toJson());
+      print("comment json object ${commentobj.toJson().toString()}");
+    }
+
+    await FirebaseController.updateCommentMemo(photoMemo.docId, photoMemo);
+    setState(() {
+      commentList = photoMemo.comment;
+      commentController.text = "";
+    });
+    _isCommentEditEnable = false;
+  }
+
+
+  void _updateComment(){
+
   }
 
   void deleteComment(int index) async{

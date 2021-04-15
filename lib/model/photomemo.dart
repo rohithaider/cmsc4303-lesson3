@@ -6,10 +6,12 @@ class PhotoMemo {
   String photoFileName; //stored at storage of firebase non text database
   String photoURL;
   DateTime timestamp;
+  String token;
   List<dynamic> sharedWith; //list of email
   List<dynamic> imageLabels; //image identidfied my machine learning
   List<dynamic> comment;
   List<dynamic> like;
+
 
   // key for Firestore document
   static const TITLE = 'title';
@@ -22,23 +24,26 @@ class PhotoMemo {
   static const IMAGE_LABELS = 'imageLabels';
   static const COMMENT = 'comments';
   static const LIKE = 'likes';
+  static const TOKEN = 'token';
 
-  PhotoMemo(
-      {this.docId,
-      this.createdBy,
-      this.memo,
-      this.photoFileName,
-      this.photoURL,
-      this.timestamp,
-      this.title,
-      this.sharedWith,
-      this.imageLabels,
-      this.comment,
-      this.like}) {
+  PhotoMemo({
+    this.docId,
+    this.createdBy,
+    this.memo,
+    this.photoFileName,
+    this.photoURL,
+    this.timestamp,
+    this.title,
+    this.sharedWith,
+    this.imageLabels,
+    this.comment,
+    this.like,
+    this.token
+  }) {
     this.sharedWith ??= [];
     this.imageLabels ??= [];
     this.comment ??= [];
-    this.like ??= [];
+    this.like??=[];
   }
 
   PhotoMemo.clone(PhotoMemo p) {
@@ -55,6 +60,7 @@ class PhotoMemo {
     this.imageLabels.addAll(p.imageLabels); //deep copy
     this.comment?.add(p.comment);
     this.like?.add(p.like);
+    this.token = p.token;
   }
   void assign(PhotoMemo p) {
     this.docId = p.docId;
@@ -70,6 +76,7 @@ class PhotoMemo {
     this.imageLabels.addAll(p.imageLabels);
     this.comment = p.comment;
     this.like = p.like;
+    this.token = p.token;
   }
 
 //from dart object to firestore document
@@ -84,7 +91,8 @@ class PhotoMemo {
       SHARED_WITH: this.sharedWith,
       IMAGE_LABELS: this.imageLabels,
       COMMENT: this.comment,
-      LIKE: this.like,
+      LIKE:this.like,
+      TOKEN:this.token,
     };
   }
 
@@ -103,6 +111,7 @@ class PhotoMemo {
           : DateTime.fromMillisecondsSinceEpoch(doc[TIMESTAMP].millisecondsSinceEpoch),
       comment: doc[COMMENT],
       like: doc[LIKE],
+      token:doc[TOKEN],
     );
   }
 

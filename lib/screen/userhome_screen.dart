@@ -1,5 +1,13 @@
+
+
+import 'dart:io';
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:lesson3/controller/firebasecontroller.dart';
 import 'package:lesson3/model/constant.dart';
 import 'package:lesson3/model/photomemo.dart';
@@ -25,11 +33,21 @@ class _UserHomeState extends State<UserHomeScreen> {
   User user;
   List<PhotoMemo> photoMemoList;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  String token = "";
+
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  // FlutterLocalNotificationsPlugin();
+
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   @override
   void initState() {
     super.initState();
+    _getToken();
+    initMessaging();
     con = _Controller(this);
+
   }
 
   void render(fn) => setState(fn);
@@ -39,6 +57,9 @@ class _UserHomeState extends State<UserHomeScreen> {
     Map args = ModalRoute.of(context).settings.arguments;
     user ??= args[Constant.ARG_USER];
     photoMemoList ??= args[Constant.ARG_PHOTOMEMOLIST];
+
+
+
     return WillPopScope(
       onWillPop: () => Future.value(false), //android system back button disabled
       child: Scaffold(
@@ -123,18 +144,18 @@ class _UserHomeState extends State<UserHomeScreen> {
                       context: context,
                     ),
                     trailing: Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          // Icon(Icons.keyboard_arrow_right),
-                          IconButton(
-                              icon: Icon(Icons.comment),
-                              onPressed: () {
-                                goToCommentScreen(photoMemoList[index]);
-                              }),
-                        ],
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            // Icon(Icons.keyboard_arrow_right),
+                            IconButton(icon: Icon(Icons.comment), onPressed: (){
+                              goToCommentScreen(photoMemoList[index]);
+                            }),
+
+
+                          ],
+                        ),
                       ),
-                    ),
                     title: Text(photoMemoList[index].title),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,23 +167,22 @@ class _UserHomeState extends State<UserHomeScreen> {
                         Text('Shared with: ${photoMemoList[index].sharedWith}'),
                         Text('Updated at: ${photoMemoList[index].timestamp}'),
                         InkWell(
-                          onTap: () {
+                          onTap: (){
                             goToLikeScreen(photoMemoList[index]);
                           },
                           child: Container(
                             margin: EdgeInsets.all(0),
                             child: Row(
                               children: [
-                                IconButton(
-                                    icon: Icon(Icons.favorite),
-                                    onPressed: () {
-                                      goToLikeScreen(photoMemoList[index]);
-                                    }),
-                                Text(photoMemoList[index].like.length.toString())
+                                IconButton(icon: Icon(Icons.favorite), onPressed: (){
+                                  goToLikeScreen(photoMemoList[index]);
+                                }),
+                                Text(photoMemoList[index].like?.length.toString())
                               ],
                             ),
                           ),
                         ),
+                        
                       ],
                     ),
                     onTap: () => con.onTap(index),
@@ -175,13 +195,78 @@ class _UserHomeState extends State<UserHomeScreen> {
   }
 
   Future<void> goToCommentScreen(PhotoMemo photoMemo) async {
+
     await Navigator.pushNamed(context, CommentScreen.routeName, arguments: {
       Constant.ARG_COMMENT: photoMemo,
       Constant.ARG_USER: user,
     });
   }
+  void _getToken(){
+
+    _firebaseMessaging.getToken().then((value) => token = value);
+  }
+
+
+  void initMessaging(){
+
+    var androidInit = AndroidInitializationSettings("@mipmap/ic_launcher");
+    var iosInit = IOSInitializationSettings();
+
+    var initSetting = InitializationSettings(android: androidInit,iOS: iosInit);
+
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    flutterLocalNotificationsPlugin.initialize(initSetting);
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+
+      showNotification(message);
+    });
+  }
+
+
+  void showNotification(RemoteMessage message) async{
+    var androidDetails = AndroidNotificationDetails('channelIdLession3','channelLession3','channelDescriptionLession3');
+
+    var iosDetails  = IOSNotificationDetails();
+
+    var generalNotificationDetails = NotificationDetails(android: androidDetails,iOS: iosDetails);
+
+    await flutterLocalNotificationsPlugin.show(Random().nextInt(10000), message.notification.title, message.notification.body,generalNotificationDetails,
+        payload: 'Notification');
+  }
+
+  // void showNotificationSecond() async {
+  //   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+  //       'photomeme11', 'photomemo', 'share you photomemo to world',
+  //       importance: Importance.max, priority: Priority.high, ticker: 'ticker');
+  //   var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+  //   var platformChannelSpecifics = NotificationDetails(
+  //       android: androidPlatformChannelSpecifics,
+  //       iOS: iOSPlatformChannelSpecifics);
+  //   await flutterLocalNotificationsPlugin.show(
+  //       0,
+  //       Platform.isIOS
+  //           ? "ios"
+  //           : "android",
+  //       Platform.isIOS
+  //           ? "ios boy"
+  //           : "ios body",
+  //       platformChannelSpecifics,
+  //       payload: 'item x');
+  // }
+
+
+
 
   Future<void> goToLikeScreen(PhotoMemo photoMemo) async {
+
     await Navigator.pushNamed(context, LikeScreen.routeName, arguments: {
       Constant.ARG_LIKE: photoMemo,
       Constant.ARG_USER: user,
@@ -202,6 +287,7 @@ class _Controller {
       arguments: {
         Constant.ARG_USER: state.user,
         Constant.ARG_PHOTOMEMOLIST: state.photoMemoList,
+        Constant.ARG_TOKEN: state.token,
       },
     );
     state.render(() {});

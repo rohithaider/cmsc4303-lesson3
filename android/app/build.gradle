@@ -44,6 +44,7 @@ android {
         targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -59,6 +60,13 @@ flutter {
     source '../..'
 }
 
-dependencies {
+dependencies {  
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+//    implementation platform('com.google.firebase:firebase-bom:26.8.0')
+//    implementation 'com.google.firebase:firebase-inappmessaging-display:19.1.5'
+//    implementation 'com.google.firebase:firebase-messaging:20.2.4'
+    implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    implementation 'com.android.support:multidex:1.0.3'
+
+
 }

@@ -26,6 +26,7 @@ class _AddPhotoMemoState extends State<AddPhotoMemoScreen> {
   File photo;
   String progressMessage;
   SingingCharacter _character = SingingCharacter.Imagelabeler;
+  String token;
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _AddPhotoMemoState extends State<AddPhotoMemoScreen> {
     Map args = ModalRoute.of(context).settings.arguments;
     user ??= args[Constant.ARG_USER];
     photoMemoList ??= args[Constant.ARG_PHOTOMEMOLIST];
+    token ??= args[Constant.ARG_TOKEN];
     return Scaffold(
       appBar: AppBar(
         title: Text('Add PhotoMemo'),
@@ -224,6 +226,7 @@ class _Controller {
       tempMemo.timestamp = DateTime.now();
       tempMemo.createdBy = state.user.email;
       tempMemo.imageLabels = imageLabels;
+      tempMemo.token = state.token;
       // tempMemo.comment = [{"email":"to@gmail.com","comment":"i love this memo"}];
       String docId = await FirebaseController.addPhotoMemo(tempMemo);
       tempMemo.docId = docId;

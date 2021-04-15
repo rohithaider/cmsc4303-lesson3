@@ -14,6 +14,7 @@ class Constant {
   static const ARG_FILENAME = 'filename';
   static const ARG_COMMENT = 'comment_data';
   static const ARG_LIKE = 'like_data';
+  static const ARG_TOKEN = 'token';
 
   static const MIN_ML_CONFIDENCE = 0.7;
 }
